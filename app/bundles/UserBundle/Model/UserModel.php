@@ -260,23 +260,20 @@ class UserModel extends FormModel
      */
     public function sendResetEmail(User $user)
     {
-        $mailer = $this->mailHelper->getMailer();
+        $mailer = $this->factory->getMailerResetPassword();
 
         $resetToken = $this->getResetToken($user);
         $resetLink  = $this->router->generate('mautic_user_passwordresetconfirm', ['token' => $resetToken], true);
 
         $mailer->setTo([$user->getEmail() => $user->getName()]);
         $mailer->setSubject($this->translator->trans('mautic.user.user.passwordreset.subject'));
-        $text = $this->translator->trans(
+
+        $body = $this->translator->trans(
             'mautic.user.user.passwordreset.email.body',
             ['%name%' => $user->getFirstName(), '%resetlink%' => '<a href="'.$resetLink.'">'.$resetLink.'</a>']
         );
-        $text = str_replace('\\n', "\n", $text);
-        $html = nl2br($text);
-
-        $mailer->setBody($html);
-        $mailer->setPlainText(strip_tags($text));
-
+        $body = str_replace('\\n', "<br>", $body);
+        $mailer->setBody($body, 'text/html');
         $mailer->send();
     }
 

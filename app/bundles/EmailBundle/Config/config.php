@@ -322,6 +322,15 @@ return [
                     'setPassword' => ['%mautic.mailer_password%'],
                 ],
             ],
+            'mautic.transport.resetpassword' => [
+                'class'        => 'Mautic\EmailBundle\Swiftmailer\Transport\MailjetTransport',
+                'serviceAlias' => 'swiftmailer.mailer.transport.%s',
+                'methodCalls'  => [
+                    'setUsername'      => ['%mautic.mailer_reset_pass_user%'],
+                    'setPassword'      => ['%mautic.mailer_reset_pass_password%'],
+                    'setMauticFactory' => ['mautic.factory']
+                ]
+            ],
             'mautic.transport.sendgrid' => [
                 'class'        => 'Mautic\EmailBundle\Swiftmailer\Transport\SendgridTransport',
                 'serviceAlias' => 'swiftmailer.mailer.transport.%s',
