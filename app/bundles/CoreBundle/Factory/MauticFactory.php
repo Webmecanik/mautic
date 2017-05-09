@@ -378,19 +378,13 @@ class MauticFactory
         return $this->container->get('mautic.helper.mailer')->getMailer($cleanSlate);
     }
 
-   public function getMailerResetPassword($cleanSlate = true)
+    public function getMailerResetPassword($cleanSlate = true)
     {
-        if ($this->mailHelper == null) {
-            $this->mailHelper = new MailHelper(
-                $this, $this->container->get('swiftmailer.mailer.mailer_reset_pass'), array(
-                    $this->getParameter('mailer_reset_pass_from_email') => $this->getParameter('mailer_reset_pass_from_name')
-                )
-                );
-        } else {
-            $this->mailHelper->reset($cleanSlate);
-        }
-
-        return $this->mailHelper;
+       return new MailHelper(
+            $this, $this->container->get('swiftmailer.mailer.mailer_reset_pass'), array(
+                $this->getParameter('mailer_reset_pass_from_email') => $this->getParameter('mailer_reset_pass_from_name')
+            )
+            );
     }
 
     /**
