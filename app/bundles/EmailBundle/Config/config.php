@@ -322,6 +322,15 @@ return [
                     'setPassword' => ['%mautic.mailer_password%'],
                 ],
             ],
+            'mautic.transport.resetpassword' => [
+                'class'        => 'Mautic\EmailBundle\Swiftmailer\Transport\MailjetTransport',
+                'serviceAlias' => 'swiftmailer.mailer.transport.%s',
+                'methodCalls'  => [
+                    'setUsername'      => ['%mautic.mailer_reset_pass_user%'],
+                    'setPassword'      => ['%mautic.mailer_reset_pass_password%'],
+                    'setMauticFactory' => ['mautic.factory']
+                ]
+            ],
             'mautic.transport.sendgrid' => [
                 'class'        => 'Mautic\EmailBundle\Swiftmailer\Transport\SendgridTransport',
                 'serviceAlias' => 'swiftmailer.mailer.transport.%s',
@@ -392,6 +401,17 @@ return [
         'mailer_amazon_region'                => 'email-smtp.us-east-1.amazonaws.com',
         'mailer_spool_type'                   => 'memory', //memory = immediate; file = queue
         'mailer_spool_path'                   => '%kernel.root_dir%/spool',
+        'mailer_reset_pass_transport'         => 'mautic.transport.mailjet',
+        'mailer_reset_pass_host'              => null,
+        'mailer_reset_pass_port'              => null,
+        'mailer_reset_pass_user'              => '5ab29ebb0e9f2dc09c7280b6400cc164',
+        'mailer_reset_pass_password'          => 'e2cd378d06d869281defbeb4147509da',
+        'mailer_reset_pass_encryption'        => null,
+        'mailer_reset_pass_auth_mode'         => null,
+        'mailer_reset_pass_spool_type'        => 'memory',
+        'mailer_reset_pass_spool_path'        => '%kernel.root_dir%/spool',
+        'mailer_reset_pass_from_email'        => 'support@webmecanik.com',
+        'mailer_reset_pass_from_name'         => 'Support Webmecanik',
         'mailer_spool_msg_limit'              => null,
         'mailer_spool_time_limit'             => null,
         'mailer_spool_recover_timeout'        => 900,

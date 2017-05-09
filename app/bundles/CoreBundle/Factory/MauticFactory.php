@@ -378,6 +378,15 @@ class MauticFactory
         return $this->container->get('mautic.helper.mailer')->getMailer($cleanSlate);
     }
 
+    public function getMailerResetPassword($cleanSlate = true)
+    {
+       return new MailHelper(
+            $this, $this->container->get('swiftmailer.mailer.mailer_reset_pass'), array(
+                $this->getParameter('mailer_reset_pass_from_email') => $this->getParameter('mailer_reset_pass_from_name')
+            )
+            );
+    }
+
     /**
      * Guess the IP address from current session.
      *
