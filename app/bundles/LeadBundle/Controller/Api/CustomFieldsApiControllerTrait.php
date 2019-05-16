@@ -143,4 +143,17 @@ trait CustomFieldsApiControllerTrait
 
         $this->model->setFieldValues($entity, $parameters, $overwriteWithBlank);
     }
+
+    /**
+     * @param string $object
+     */
+    protected function setCleaningRules($object = 'lead')
+    {
+        $fields = $this->getModel('lead.field')->getFieldListWithProperties($object);
+        foreach ($fields as $field) {
+            if (!empty($field['properties']['allowHtml'])) {
+                $this->dataInputMasks[$field['alias']]  = 'html';
+            }
+        }
+    }
 }
