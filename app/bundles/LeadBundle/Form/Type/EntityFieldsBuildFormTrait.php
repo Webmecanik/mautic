@@ -279,6 +279,12 @@ trait EntityFieldsBuildFormTrait
                             if ($type == 'multiselect') {
                                 $constraints[] = new Length(['max' => 65535]);
                             }
+                            break;
+                        case 'textarea':
+                            if (!empty($properties['allowHtml'])) {
+                                $cleaningRules[$field['alias']] = 'html';
+                            }
+                            break;
                     }
 
                     $builder->add(
