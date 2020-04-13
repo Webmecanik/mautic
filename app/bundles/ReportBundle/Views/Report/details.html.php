@@ -23,7 +23,7 @@ if ($tmpl == 'index') {
     $view['slots']->set('headerTitle', $header);
 
     $buttons = [];
-    if (!empty($data) || !empty($graphs)) {
+    if ((!empty($data) || !empty($graphs)) && empty($disableExportPermission)) {
         $buttons[] = [
             'attr' => [
                 'target'      => '_new',
