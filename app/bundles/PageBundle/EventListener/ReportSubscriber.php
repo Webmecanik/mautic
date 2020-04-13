@@ -16,6 +16,7 @@ use Mautic\CoreBundle\Helper\Chart\ChartQuery;
 use Mautic\CoreBundle\Helper\Chart\LineChart;
 use Mautic\CoreBundle\Helper\Chart\PieChart;
 use Mautic\LeadBundle\Model\CompanyReportData;
+use Mautic\LeadBundle\Report\FieldsBuilder;
 use Mautic\ReportBundle\Event\ReportBuilderEvent;
 use Mautic\ReportBundle\Event\ReportGeneratorEvent;
 use Mautic\ReportBundle\Event\ReportGraphEvent;
@@ -35,9 +36,21 @@ class ReportSubscriber extends CommonSubscriber
      */
     private $companyReportData;
 
-    public function __construct(CompanyReportData $companyReportData)
+    /**
+     * @var FieldsBuilder
+     */
+    private $fieldsBuilder;
+
+    /**
+     * ReportSubscriber constructor.
+     *
+     * @param CompanyReportData $companyReportData
+     * @param FieldsBuilder     $fieldsBuilder
+     */
+    public function __construct(CompanyReportData $companyReportData, FieldsBuilder $fieldsBuilder)
     {
         $this->companyReportData = $companyReportData;
+        $this->fieldsBuilder     = $fieldsBuilder;
     }
 
     /**
@@ -247,7 +260,7 @@ class ReportSubscriber extends CommonSubscriber
 
             $companyColumns = $this->companyReportData->getCompanyData();
 
-            $pageHitsColumns = array_merge(
+            $pageHitsColumns = $filters = array_merge(
                 $columns,
                 $hitColumns,
                 $event->getCampaignByChannelColumns(),
@@ -256,9 +269,12 @@ class ReportSubscriber extends CommonSubscriber
                 $companyColumns
             );
 
+            $this->fieldsBuilder->appendSegmentFilter($filters);
+
             $data = [
                 'display_name' => 'mautic.page.hits',
                 'columns'      => $pageHitsColumns,
+                'filters'      => $filters,
             ];
             $event->addTable(self::CONTEXT_PAGE_HITS, $data, self::CONTEXT_PAGES);
 
@@ -350,9 +366,14 @@ class ReportSubscriber extends CommonSubscriber
                 ],
             ];
 
+            $columns = $filters = array_merge($hitColumns, $event->getLeadColumns(), $event->getIpColumn());
+
+            $this->fieldsBuilder->appendSegmentFilter($filters);
+
             $data = [
                 'display_name' => 'mautic.'.self::CONTEXT_VIDEO_HITS,
-                'columns'      => array_merge($hitColumns, $event->getLeadColumns(), $event->getIpColumn()),
+                'columns'      => $columns,
+                'filters'      => $filters,
             ];
             $event->addTable(self::CONTEXT_VIDEO_HITS, $data, 'videos');
         }
@@ -395,6 +416,10 @@ class ReportSubscriber extends CommonSubscriber
                     $event->addCompanyLeftJoin($qb);
                 }
 
+                if ($event->hasFilter('s.leadlist_id')) {
+                    $qb->join('ph', MAUTIC_TABLE_PREFIX.'lead_lists_leads', 's', 's.lead_id = ph.lead_id AND s.manually_removed = 0');
+                }
+
                 break;
             case 'video.hits':
                 if (!$hasGroupBy) {
@@ -406,6 +431,11 @@ class ReportSubscriber extends CommonSubscriber
 
                 $event->addIpAddressLeftJoin($qb, 'vh');
                 $event->addLeadLeftJoin($qb, 'vh');
+
+                if ($event->hasFilter('s.leadlist_id')) {
+                    $qb->join('vh', MAUTIC_TABLE_PREFIX.'lead_lists_leads', 's', 's.lead_id = vh.lead_id AND s.manually_removed = 0');
+                }
+
                 break;
         }
         $event->setQueryBuilder($qb);
