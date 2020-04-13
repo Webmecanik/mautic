@@ -47,7 +47,12 @@ class TimezoneResolver
          */
         $timezone = $hasTimePart ? 'UTC' : $this->coreParametersHelper->getParameter('default_timezone', 'UTC');
 
-        $date = new \DateTime('midnight today', new \DateTimeZone($timezone));
+        $time = 'midnight today';
+        if ($hasTimePart) {
+            $time = 'now';
+        }
+
+        $date = new \DateTime($time, new \DateTimeZone($timezone));
 
         return new DateTimeHelper($date, null, $timezone);
     }
