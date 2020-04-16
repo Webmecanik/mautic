@@ -12,6 +12,8 @@
 namespace Mautic\SmsBundle\Integration\Twilio;
 
 use Mautic\SmsBundle\Callback\CallbackInterface;
+use Mautic\SmsBundle\Event\DeliveryEvent;
+use Mautic\SmsBundle\Event\ReplyEvent;
 use Mautic\SmsBundle\Exception\NumberNotFoundException;
 use Mautic\SmsBundle\Helper\ContactHelper;
 use Symfony\Component\HttpFoundation\ParameterBag;
@@ -71,13 +73,16 @@ class TwilioCallback implements CallbackInterface
     /**
      * @param Request $request
      *
-     * @return string
+     * @return DeliveryEvent|ReplyEvent
      */
-    public function getMessage(Request $request)
+    public function getEvent(Request $request)
     {
         $this->validateRequest($request->request);
 
-        return trim($request->get('Body'));
+        $replyEvent = new ReplyEvent();
+        $replyEvent->setMessage($request->request->get('Body'));
+
+        return $replyEvent;
     }
 
     /**
@@ -91,12 +96,10 @@ class TwilioCallback implements CallbackInterface
             // Not published or not configured
             throw new NotFoundHttpException();
         }
-
         // Validate this is a request from Twilio
         if ($accountSid !== $request->get('AccountSid')) {
             throw new BadRequestHttpException();
         }
-
         // Who is the message from?
         $number = $request->get('From');
         if (empty($number)) {

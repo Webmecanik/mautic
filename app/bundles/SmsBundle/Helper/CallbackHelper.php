@@ -11,12 +11,13 @@
 
 namespace Mautic\SmsBundle\Helper;
 
-use Mautic\LeadBundle\Entity\Lead;
 use Mautic\LeadBundle\Tracker\ContactTracker;
 use Mautic\SmsBundle\Callback\CallbackInterface;
 use Mautic\SmsBundle\Callback\ResponseInterface;
+use Mautic\SmsBundle\Event\DeliveryEvent;
 use Mautic\SmsBundle\Event\ReplyEvent;
 use Mautic\SmsBundle\Exception\NumberNotFoundException;
+use Mautic\SmsBundle\Model\SmsModel;
 use Mautic\SmsBundle\SmsEvents;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -26,9 +27,9 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
- * Class ReplyHelper.
+ * Class CallbackHelper.
  */
-class ReplyHelper
+class CallbackHelper
 {
     /**
      * @var EventDispatcherInterface
@@ -46,17 +47,28 @@ class ReplyHelper
     private $contactTracker;
 
     /**
-     * ReplyHelper constructor.
+     * @var SmsModel
+     */
+    private $smsModel;
+
+    /**
+     * CallbackHelper constructor.
      *
      * @param EventDispatcherInterface $eventDispatcher
      * @param LoggerInterface          $logger
      * @param ContactTracker           $contactTracker
+     * @param SmsModel                 $smsModel
      */
-    public function __construct(EventDispatcherInterface $eventDispatcher, LoggerInterface $logger, ContactTracker $contactTracker)
-    {
+    public function __construct(
+        EventDispatcherInterface $eventDispatcher,
+        LoggerInterface $logger,
+        ContactTracker $contactTracker,
+        SmsModel $smsModel
+    ) {
         $this->eventDispatcher = $eventDispatcher;
         $this->logger          = $logger;
         $this->contactTracker  = $contactTracker;
+        $this->smsModel        = $smsModel;
     }
 
     /**
@@ -84,18 +96,25 @@ class ReplyHelper
         $response = $this->getDefaultResponse($handler);
 
         try {
-            $message  = $handler->getMessage($request);
-            $contacts = $handler->getContacts($request);
-
-            $this->logger->debug(sprintf('SMS REPLY: Processing message "%s"', $message));
-            $this->logger->debug(sprintf('SMS REPLY: Found IDs %s', implode(',', $contacts->getKeys())));
+            $event         = $handler->getEvent($request);
+            $contacts      = $handler->getContacts($request);
+            $eventResponse = null;
 
             foreach ($contacts as $contact) {
                 // Set the contact for campaign decisions
                 $this->contactTracker->setSystemContact($contact);
 
-                $eventResponse = $this->dispatchReplyEvent($contact, $message);
-
+                if ($event instanceof DeliveryEvent) {
+                    $this->logger->debug(sprintf('SMS DELIVERY: Processing delivery callback'));
+                    $this->logger->debug(sprintf('SMS DELIVERY: Found IDs %s', implode(',', $contacts->getKeys())));
+                    $event->setContact($contact);
+                    $eventResponse = $this->dispatchDeliveryEvent($event);
+                } elseif ($event instanceof ReplyEvent) {
+                    $this->logger->debug(sprintf('SMS REPLY: Processing message "%s"', $event->getMessage()));
+                    $this->logger->debug(sprintf('SMS REPLY: Found IDs %s', implode(',', $contacts->getKeys())));
+                    $event->setContact($contact);
+                    $eventResponse = $this->dispatchReplyEvent($event);
+                }
                 if ($eventResponse instanceof Response) {
                     // Last one wins
                     $response = $eventResponse;
@@ -120,18 +139,32 @@ class ReplyHelper
     }
 
     /**
-     * @param Lead   $contact
-     * @param string $message
+     * @param ReplyEvent $replyEvent
      *
-     * @return null|\Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
-    private function dispatchReplyEvent(Lead $contact, $message)
+    public function dispatchReplyEvent(ReplyEvent $replyEvent)
     {
-        $replyEvent = new ReplyEvent($contact, trim($message));
-
         $this->eventDispatcher->dispatch(SmsEvents::ON_REPLY, $replyEvent);
 
         return $replyEvent->getResponse();
+    }
+
+    /**
+     * @param DeliveryEvent $deliveryEvent
+     *
+     * @return Response|null
+     */
+    public function dispatchDeliveryEvent(DeliveryEvent $deliveryEvent)
+    {
+        if ($deliveryEvent->getTrackingHash()) {
+            $stat = $this->smsModel->getStatRepository()->findOneBy(['trackingHash' => $deliveryEvent->getTrackingHash()]);
+            $deliveryEvent->setStat($stat);
+        }
+
+        $this->eventDispatcher->dispatch(SmsEvents::ON_DELIVERY, $deliveryEvent);
+
+        return $deliveryEvent->getResponse();
     }
 
     /**

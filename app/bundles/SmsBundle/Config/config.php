@@ -77,20 +77,38 @@ return [
                     'mautic.lead.repository.lead_event_log',
                 ],
             ],
+            'mautic.sms.subscriber.delivery' => [
+                'class'     => \Mautic\SmsBundle\EventListener\DeliverySubscriber::class,
+                'arguments' => [
+                    'mautic.sms.model.stat',
+                ],
+            ],
         ],
         'forms' => [
             'mautic.form.type.sms' => [
-                'class'     => 'Mautic\SmsBundle\Form\Type\SmsType',
-                'arguments' => 'mautic.factory',
+                'class'     => \Mautic\SmsBundle\Form\Type\SmsType::class,
+                'arguments' => [
+                    'doctrine.orm.entity_manager',
+                    'request_stack',
+                    'translator',
+                ],
                 'alias'     => 'sms',
+            ],
+            'mautic.form.type.sms.properties' => [
+                'class'     => \Mautic\SmsBundle\Form\Type\SmsPropertiesType::class,
+                'arguments' => [
+                    'event_dispatcher',
+                ],
             ],
             'mautic.form.type.smsconfig' => [
                 'class' => 'Mautic\SmsBundle\Form\Type\ConfigType',
                 'alias' => 'smsconfig',
             ],
             'mautic.form.type.smssend_list' => [
-                'class'     => 'Mautic\SmsBundle\Form\Type\SmsSendType',
-                'arguments' => 'router',
+                'class'     => \Mautic\SmsBundle\Form\Type\SmsSendType::class,
+                'arguments' => [
+                    'router',
+                ],
                 'alias'     => 'smssend_list',
             ],
             'mautic.form.type.sms_list' => [
@@ -120,6 +138,12 @@ return [
             ],
         ],
         'other' => [
+            'mautic.sms.model.stat' => [
+                'class'     => \Mautic\SmsBundle\Model\StatModel::class,
+                'arguments' => [
+                    'mautic.sms.model.sms',
+                ],
+            ],
             'mautic.sms.transport_chain' => [
                 'class'     => \Mautic\SmsBundle\Sms\TransportChain::class,
                 'arguments' => [
@@ -139,8 +163,17 @@ return [
                     'mautic.helper.phone_number',
                 ],
             ],
+            'mautic.sms.helper.callback' => [
+                'class'     => \Mautic\SmsBundle\Helper\CallbackHelper::class,
+                'arguments' => [
+                    'event_dispatcher',
+                    'monolog.logger.mautic',
+                    'mautic.tracker.contact',
+                    'mautic.sms.model.sms',
+                ],
+            ],
             'mautic.sms.helper.reply' => [
-                'class'     => \Mautic\SmsBundle\Helper\ReplyHelper::class,
+                'class'     => \Mautic\SmsBundle\Helper\CallbackHelper::class,
                 'arguments' => [
                     'event_dispatcher',
                     'monolog.logger.mautic',
@@ -213,11 +246,11 @@ return [
             ],
         ],
         'controllers' => [
-            'mautic.sms.controller.reply' => [
-                'class'     => \Mautic\SmsBundle\Controller\ReplyController::class,
+            'mautic.sms.controller.callback' => [
+                'class'     => \Mautic\SmsBundle\Controller\CallbackController::class,
                 'arguments' => [
                     'mautic.sms.callback_handler_container',
-                    'mautic.sms.helper.reply',
+                    'mautic.sms.helper.callback',
                 ],
                 'methodCalls' => [
                     'setContainer' => [
@@ -245,7 +278,7 @@ return [
         'public' => [
             'mautic_sms_callback' => [
                 'path'       => '/sms/{transport}/callback',
-                'controller' => 'MauticSmsBundle:Reply:callback',
+                'controller' => 'MauticSmsBundle:Callback:callback',
             ],
             /* @deprecated as this was Twilio specific */
             'mautic_receive_sms' => [
