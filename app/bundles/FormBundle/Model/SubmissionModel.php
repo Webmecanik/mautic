@@ -45,6 +45,7 @@ use Mautic\LeadBundle\Helper\IdentifyCompanyHelper;
 use Mautic\LeadBundle\Model\CompanyModel;
 use Mautic\LeadBundle\Model\FieldModel as LeadFieldModel;
 use Mautic\LeadBundle\Model\LeadModel;
+use Mautic\LeadBundle\Tracker\ContactTracker;
 use Mautic\LeadBundle\Tracker\Service\DeviceTrackingService\DeviceTrackingServiceInterface;
 use Mautic\PageBundle\Model\PageModel;
 use Symfony\Component\HttpFoundation\Request;
@@ -132,6 +133,11 @@ class SubmissionModel extends CommonFormModel
     private $dateHelper;
 
     /**
+     * @var ContactTracker
+     */
+    private $contactTracker;
+
+    /**
      * @param IpLookupHelper                 $ipLookupHelper
      * @param TemplatingHelper               $templatingHelper
      * @param FormModel                      $formModel
@@ -146,6 +152,7 @@ class SubmissionModel extends CommonFormModel
      * @param DeviceTrackingServiceInterface $deviceTrackingService
      * @param FieldValueTransformer          $fieldValueTransformer
      * @param DateHelper                     $dateHelper
+     * @param ContactTracker                 $contactTracker
      */
     public function __construct(
         IpLookupHelper $ipLookupHelper,
@@ -161,7 +168,8 @@ class SubmissionModel extends CommonFormModel
         FormUploader $formUploader,
         DeviceTrackingServiceInterface $deviceTrackingService,
         FieldValueTransformer $fieldValueTransformer,
-        DateHelper $dateHelper
+        DateHelper $dateHelper,
+        ContactTracker $contactTracker
     ) {
         $this->ipLookupHelper         = $ipLookupHelper;
         $this->templatingHelper       = $templatingHelper;
@@ -177,6 +185,7 @@ class SubmissionModel extends CommonFormModel
         $this->deviceTrackingService  = $deviceTrackingService;
         $this->fieldValueTransformer  = $fieldValueTransformer;
         $this->dateHelper             = $dateHelper;
+        $this->contactTracker         = $contactTracker;
     }
 
     /**
@@ -875,13 +884,16 @@ class SubmissionModel extends CommonFormModel
 
         if (!$inKioskMode) {
             // Default to currently tracked lead
-            if ($currentLead = $this->leadModel->getCurrentLead()) {
-                $lead          = $currentLead;
+            if ($trackedContact = $this->contactTracker->getContactByTrackedDevice()) {
+                $lead          = $trackedContact;
                 $leadId        = $lead->getId();
                 $currentFields = $lead->getProfileFields();
-            }
 
-            $this->logger->debug('FORM: Not in kiosk mode so using current contact ID #'.$leadId);
+                $this->logger->debug('FORM: Not in kiosk mode so using current contact ID #'.$leadId);
+            } else {
+                $lead->setNewlyCreated(true);
+                $this->logger->debug('FORM: Not in kiosk mode create a new contact');
+            }
         } else {
             // Default to a new lead in kiosk mode
             $lead->setNewlyCreated(true);

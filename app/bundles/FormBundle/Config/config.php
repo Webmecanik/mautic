@@ -408,6 +408,7 @@ return [
                     'mautic.lead.service.device_tracking_service',
                     'mautic.form.service.field.value.transformer',
                     'mautic.helper.template.date',
+                    'mautic.tracker.contact',
                 ],
             ],
             'mautic.form.model.submission_result_loader' => [
