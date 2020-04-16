@@ -47,6 +47,9 @@ trait EntityFieldsBuildFormTrait
             if ($field['isUniqueIdentifer']) {
                 $attr['data-unique-identifier'] = $field['alias'];
             }
+            if (isset($options['disabled'][$alias])) {
+                $attr['disabled'] = true;
+            }
 
             if ($isObject) {
                 $value = (isset($fieldValues[$group][$alias]['value'])) ?
@@ -196,7 +199,7 @@ trait EntityFieldsBuildFormTrait
                         $typeProperties['expanded']  = true;
                         $typeProperties['yes_label'] = $properties['yes'];
                         $typeProperties['no_label']  = $properties['no'];
-                        $typeProperties['attr']      = [];
+                        $typeProperties['attr']      = $attr;
                         $emptyValue                  = ' x ';
                         if ($value !== '' && $value !== null) {
                             $value = (int) $value;
@@ -230,19 +233,19 @@ trait EntityFieldsBuildFormTrait
                             break;
                     }
 
+                    $attr['class']            = 'form-control';
+                    $attr['data-placeholder'] = $field['label'];
+
                     $builder->add(
                         $alias,
                         'choice',
                         [
-                            'choices'    => $choices,
-                            'required'   => $required,
-                            'label'      => $field['label'],
-                            'label_attr' => ['class' => 'control-label'],
-                            'data'       => $value,
-                            'attr'       => [
-                                'class'            => 'form-control',
-                                'data-placeholder' => $field['label'],
-                            ],
+                            'choices'     => $choices,
+                            'required'    => $required,
+                            'label'       => $field['label'],
+                            'label_attr'  => ['class' => 'control-label'],
+                            'data'        => $value,
+                            'attr'        => $attr,
                             'mapped'      => $mapped,
                             'multiple'    => false,
                             'expanded'    => false,
