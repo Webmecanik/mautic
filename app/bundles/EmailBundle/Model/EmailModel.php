@@ -1771,11 +1771,8 @@ class EmailModel extends FormModel implements AjaxLookupModelInterface
     }
 
     /**
-     * @param string    $column
-     * @param \DateTime $dateFrom
-     * @param \DateTime $dateTo
-     * @param array     $filter
-     * @param bool      $canViewOthers
+     * @param string $column
+     * @param bool   $canViewOthers
      *
      * @return array
      */
@@ -1786,7 +1783,7 @@ class EmailModel extends FormModel implements AjaxLookupModelInterface
         $segmentId  = ArrayHelper::pickValue('segmentId', $filter);
 
         $format = '%H:00';
-        if ($timeFormat == 12) {
+        if (12 == $timeFormat) {
             $format = '%h %p';
         }
 
