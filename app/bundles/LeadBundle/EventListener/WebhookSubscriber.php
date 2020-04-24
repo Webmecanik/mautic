@@ -202,9 +202,6 @@ class WebhookSubscriber implements EventSubscriberInterface
         );
     }
 
-    /**
-     * @param CompanyEvent $event
-     */
     public function onCompanySave(CompanyEvent $event)
     {
         $this->webhookModel->queueWebhooksByType(
@@ -215,9 +212,6 @@ class WebhookSubscriber implements EventSubscriberInterface
         );
     }
 
-    /**
-     * @param CompanyEvent $event
-     */
     public function onCompanyDelete(CompanyEvent $event)
     {
         $company = $event->getCompany();
