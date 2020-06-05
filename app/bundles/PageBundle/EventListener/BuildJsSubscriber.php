@@ -191,10 +191,15 @@ class BuildJsSubscriber extends CommonSubscriber
                 var params = {
                     page_title: d.title,
                     page_language: n.language,
+                    preferred_locale: (n.language).replace('-', '_'),
                     page_referrer: (d.referrer) ? d.referrer.split('/')[2] : '',
                     page_url: l.href,
                     counter: m.pageViewCounter
                 };
+                
+                if (window.Intl && window.Intl.DateTimeFormat) {
+                    params.timezone =  new window.Intl.DateTimeFormat().resolvedOptions().timeZone;
+                }
                 
                 params = MauticJS.appendTrackedContact(params);
                 
