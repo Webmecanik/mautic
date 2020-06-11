@@ -16,6 +16,7 @@ use Mautic\EmailBundle\EmailEvents;
 use Mautic\EmailBundle\Event\EmailOpenEvent;
 use Mautic\EmailBundle\Event\EmailSendEvent;
 use Mautic\EmailBundle\Form\Type\EmailToUserType;
+use Mautic\LeadBundle\Entity\Lead;
 use Mautic\PointBundle\Event\PointBuilderEvent;
 use Mautic\PointBundle\Event\TriggerBuilderEvent;
 use Mautic\PointBundle\Model\PointModel;
@@ -30,6 +31,11 @@ class PointSubscriber extends CommonSubscriber
      * @var PointModel
      */
     protected $pointModel;
+
+    /**
+     * @var array
+     */
+    private $triggered = [];
 
     /**
      * PointSubscriber constructor.
@@ -123,12 +129,34 @@ class PointSubscriber extends CommonSubscriber
      */
     public function onEmailSend(EmailSendEvent $event)
     {
-        if ($leadArray = $event->getLead()) {
+        $leadArray = $event->getLead();
+        if ($leadArray && is_array($leadArray) && !empty($leadArray['id'])) {
             $lead = $this->em->getReference('MauticLeadBundle:Lead', $leadArray['id']);
         } else {
             return;
         }
 
-        $this->pointModel->triggerAction('email.send', $event->getEmail(), null, $lead);
+        if ($this->shouldTriggerPointEmailSendAction($event, $lead)) {
+            $this->pointModel->triggerAction('email.send', $event->getEmail(), null, $lead, true);
+        }
+    }
+
+    /**
+     * @param EmailSendEvent $event
+     * @param Lead           $lead
+     *
+     * @return bool
+     */
+    private function shouldTriggerPointEmailSendAction(EmailSendEvent $event, Lead $lead)
+    {
+        if ($event->getEmail()) {
+            if (!isset($this->triggered[$lead->getId()][$event->getEmail()->getId()])) {
+                $this->triggered[$lead->getId()][$event->getEmail()->getId()] = true;
+
+                return true;
+            }
+        }
+
+        return false;
     }
 }
