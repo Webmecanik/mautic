@@ -15,7 +15,6 @@ use Mautic\CoreBundle\Helper\UrlHelper;
 use Mautic\CoreBundle\Model\AbstractCommonModel;
 use Mautic\LeadBundle\Entity\LeadFieldRepository;
 use Mautic\LeadBundle\Helper\TokenHelper;
-use Mautic\PageBundle\Entity\Redirect;
 use Mautic\PageBundle\Entity\Trackable;
 use Mautic\PageBundle\Event\UntrackableUrlsEvent;
 use Mautic\PageBundle\PageEvents;
@@ -498,7 +497,7 @@ class TrackableModel extends AbstractCommonModel
             }
 
             // Do not convert contact tokens
-            if (!$this->isContactFieldToken($token)) {
+            if (!$this->isSupportedToken($token)) {
                 $trackableUrl = (!empty($urlParts['query'])) ? $this->contentTokens[$token].'?'.$urlParts['query'] : $this->contentTokens[$token];
                 $trackableKey = $trackableUrl;
 
@@ -555,7 +554,7 @@ class TrackableModel extends AbstractCommonModel
             return false;
         }
 
-        if ($this->isContactFieldToken($token)) {
+        if ($this->isSupportedToken($token)) {
             // Assume it's true as the redirect methods should handle this dynamically
             return true;
         }
@@ -865,9 +864,9 @@ class TrackableModel extends AbstractCommonModel
      *
      * @return bool
      */
-    private function isContactFieldToken($token)
+    private function isSupportedToken($token)
     {
-        return strpos($token, '{contactfield') !== false || strpos($token, '{leadfield') !== false;
+        return strpos($token, '{contactfield') !== false || strpos($token, '{leadfield') !== false || strpos($token, '{pagelink') !== false;
     }
 
     /**

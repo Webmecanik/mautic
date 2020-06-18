@@ -98,7 +98,7 @@ class UrlHelperTest extends \PHPUnit_Framework_TestCase
     public function testGetUrlsFromPlaintextSkipDefaultTokenValues()
     {
         $this->assertEquals(
-            // 1 is skipped because it's set as the token default
+        // 1 is skipped because it's set as the token default
             [0 => 'https://find.this', 2 => '{contactfield=website|http://skip.this}'],
             UrlHelper::getUrlsFromPlaintext('Find this url: https://find.this, but allow this token because we know its a url: {contactfield=website|http://skip.this}! ')
         );
@@ -155,6 +155,19 @@ What happens with this https://example.org/with/just-tokenized-query?foo={contac
 Underscore test https://example.org/with/query?utm_campaign=_hello#_underscore-test
 STRING
             )
+        );
+    }
+
+    /**
+     * Case with:
+     * http://domain.tld/r/hash?utm_source=source&utm_mediuum=medium - redirect URL with utm_tags
+     * Redirected url with ? in query http://redirecttoanotherdomain.tld?some=content is translated to http://redirectdomain.tld?some=content?utm_source=source&utm_mediuum=medium    *.
+     */
+    public function testSanitizeAbsoluteUrlSanitizeQueryRedirect()
+    {
+        $this->assertEquals(
+            'http://username:password@hostname:9090/path?ar_g1=value&arg2=some+email%40address.com#anchor',
+            UrlHelper::sanitizeAbsoluteUrl('http://username:password@hostname:9090/path?ar g1=value?arg2=some+email@address.com#anchor')
         );
     }
 }
