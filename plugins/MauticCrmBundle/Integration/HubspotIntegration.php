@@ -12,6 +12,7 @@
 
 namespace MauticPlugin\MauticCrmBundle\Integration;
 
+use Mautic\CoreBundle\Helper\ArrayHelper;
 use Mautic\CoreBundle\Helper\UserHelper;
 use Mautic\LeadBundle\DataObject\LeadManipulator;
 use Mautic\LeadBundle\Entity\Lead;
@@ -196,6 +197,10 @@ class HubspotIntegration extends CrmAbstractIntegration
                                     'label'    => $fieldInfo['label'],
                                     'required' => ('email' === $fieldInfo['name']),
                                 ];
+                                if (!empty($fieldInfo['readOnlyValue'])) {
+                                    $hubsFields[$object][$fieldInfo['name']]['update_mautic'] = 1;
+                                    $hubsFields[$object][$fieldInfo['name']]['readOnly']      = 1;
+                                }
                             }
                         }
 
@@ -555,6 +560,15 @@ class HubspotIntegration extends CrmAbstractIntegration
             $fieldsToUpdate
         );
 
+        $readOnlyFields = $this->getReadOnlyFields($object);
+
+        $createFields = array_filter($createFields,
+            function ($createField, $key) use ($readOnlyFields) {
+                if (!isset($readOnlyFields[$key])) {
+                    return $createField;
+                }
+            }, ARRAY_FILTER_USE_BOTH);
+
         $mappedData = $this->populateLeadData(
             $lead,
             [
@@ -607,5 +621,26 @@ class HubspotIntegration extends CrmAbstractIntegration
         foreach ($mappedData as &$data) {
             $data = str_replace('|', ';', $data);
         }
+    }
+
+    /**
+     * @param $object
+     *
+     * @return array
+     *
+     * @throws \Exception
+     */
+    private function getReadOnlyFields($object)
+    {
+        $fields = ArrayHelper::getValue($object, $this->getAvailableLeadFields(), []);
+
+        return array_filter(
+            $fields,
+            function ($field) {
+                if (!empty($field['readOnly'])) {
+                    return $field;
+                }
+            }
+        );
     }
 }
