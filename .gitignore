@@ -73,7 +73,12 @@
 !/media/images/avatar.png
 !/media/images/favicon.ico
 !/media/images/mautic_logo*
+!/media/images/automation_*
 !/media/images/.htaccess
+/media/dashboards/*
+!/media/dashboards/*.json
+/atmt_admin
+
 
 /plugins/*
 !/plugins/MauticCitrixBundle

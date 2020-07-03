@@ -348,24 +348,6 @@ function fetch_updates()
     global $localParameters;
 
     $version = file_get_contents(__DIR__.'/app/version.txt');
-    try {
-        // Generate a unique instance ID for the site
-        $instanceId = hash('sha1', $localParameters['secret_key'].'Mautic'.$localParameters['db_driver']);
-
-        $data = [
-            'application'   => 'Mautic',
-            'version'       => $version,
-            'phpVersion'    => PHP_VERSION,
-            'dbDriver'      => $localParameters['db_driver'],
-            'serverOs'      => php_uname('s').' '.php_uname('r'),
-            'instanceId'    => $instanceId,
-            'installSource' => (isset($localParameters['install_source'])) ? $localParameters['install_source'] : 'Mautic',
-        ];
-
-        make_request('https://updates.mautic.org/stats/send', 'post', $data);
-    } catch (\Exception $exception) {
-        // Not so concerned about failures here, move along
-    }
 
     // Get the update data
     try {
@@ -375,7 +357,7 @@ function fetch_updates()
             'stability'  => (isset($localParameters['update_stability'])) ? $localParameters['update_stability'] : 'stable',
         ];
 
-        $data   = make_request('https://updates.mautic.org/index.php?option=com_mauticdownload&task=checkUpdates', 'post', $appData);
+        $data   = make_request('http://update.webmecanik.com/atmt_update.php', 'post', $appData);
         $update = json_decode($data);
 
         // Check if this version is up to date

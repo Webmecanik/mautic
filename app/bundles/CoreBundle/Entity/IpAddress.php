@@ -40,7 +40,7 @@ class IpAddress
     /**
      * @var array
      */
-    private $ipDetails;
+    private $ipDetails = [];
 
     public static function loadMetadata(ORM\ClassMetadata $metadata)
     {

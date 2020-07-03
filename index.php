@@ -19,6 +19,10 @@ use Mautic\CoreBundle\ErrorHandler\ErrorHandler;
 use Mautic\Middleware\MiddlewareBuilder;
 use function Stack\run;
 
+if (strpos($_SERVER['REQUEST_URI'], '/s/') !== false) {
+    ini_set('memory_limit', '512M');
+}
+
 ErrorHandler::register('prod');
 
 run((new MiddlewareBuilder(new AppKernel('prod', false)))->resolve());

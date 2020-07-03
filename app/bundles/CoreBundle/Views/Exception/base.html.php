@@ -50,7 +50,7 @@ $src = $view['mautibot']->getImage($img);
                 <footer class="text-right">Mautibot</footer>
             </blockquote>
             <div class="pull-right">
-                <a class="text-muted" href="http://mau.tc/report-issue" target="_new"><?php echo $view['translator']->trans('mautic.core.report_issue'); ?></a>
+                <a class="text-muted" href="mailto:<?php echo $mailSupport; ?>"><?php echo $view['translator']->trans('mautic.core.report_issue'); ?></a>
             </div>
         </div>
         <?php endif; ?>

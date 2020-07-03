@@ -98,6 +98,18 @@ class ExceptionController extends CommonController
         $url      = $request->getRequestUri();
         $urlParts = parse_url($url);
 
+        /***/
+        $currentUser = $this->factory->getUser();
+        $completUrl  = $_SERVER['HTTP_HOST'].$url;
+
+        // construction du mail pour "report an issue"
+        $subject = $this->buildSubjectMail($code);
+        $body    = $this->buildBodyMailFromException($currentUser, $completUrl, $exception);
+
+        $mailDest    = $this->coreParametersHelper->getParameter('mail_error_support_manual_report', 'support@webmecanik.com');
+        $mailSupport = $mailDest.'?subject='.$subject.'&body='.$body;
+        /***/
+
         return $this->delegateView(
             [
                 'viewParameters'  => [
@@ -108,6 +120,7 @@ class ExceptionController extends CommonController
                     'logger'         => $logger,
                     'currentContent' => $currentContent,
                     'isPublicPage'   => $anonymous,
+                    'mailSupport'    => $mailSupport,
                 ],
                 'contentTemplate' => $template,
                 'passthroughVars' => [
@@ -138,5 +151,53 @@ class ExceptionController extends CommonController
         Response::closeOutputBuffers($startObLevel + 1, true);
 
         return ob_get_clean();
+    }
+
+    protected function extractCode($exception)
+    {
+        $code = $exception->getStatusCode();
+        if ($code === 0) {
+            //thrown exception that didn't set a code
+            $code = 500;
+        }
+
+        return $code;
+    }
+
+    /**
+     * construct subject mail.
+     */
+    protected function buildSubjectMail($code)
+    {
+        $subject = 'Demande de support - Code : '.$code;
+
+        return $subject;
+    }
+
+    protected function buildBodyMailFromException($user, $url, $exception)
+    {
+        $code         = $this->extractCode($exception);
+        $errorMessage = $exception->getMessage();
+        $stack        = $exception->getTrace();
+
+        return $this->buildBodyMail($code, $errorMessage, $url, $stack, $user);
+    }
+
+    /**
+     * construct body mail.
+     */
+    protected function buildBodyMail($code, $errorMessage, $url, $stack, $user)
+    {
+        $pile = $this->renderView('MauticCoreBundle:Exception:traces.html.php', ['traces' => $stack]);
+        $body = 'Votre identité : '.$user->getName().', '.$user->getEmail().' %0D%0A %0D%0A';
+        $body .= 'Ce que vous vouliez faire : '.'%0D%0A %0D%0A';
+        $body .= 'Les actions que vous avez faites : '.'%0D%0A %0D%0A';
+        $body .= 'Ce qui s\'est passé : '.'%0D%0A %0D%0A';
+        $body .= 'Informations complèmentaires : '.'%0D%0A %0D%0A';
+        $body .= '*** NE PAS EFFACER CI DESSOUS - INFORMATIONS POUR LE SUPPORT ***'.'%0D%0A';
+        $body .= 'URL d\'erreur : '."$url %0D%0A";
+        $body .= 'Type d\'erreur : '."$code $errorMessage %0D%0A ";
+
+        return $body;
     }
 }

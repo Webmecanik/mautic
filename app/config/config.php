@@ -141,6 +141,19 @@ $container->loadFromExtension('swiftmailer', [
         'id'   => 'mautic.transport.spool',
     ],
 ]);
+/*
+ * @todo check password_reset_mailer
+ *
+'password_reset_mailer' => [
+    'transport'  => '%mautic.password_reset_mailer_transport%',
+    'host'       => '%mautic.password_reset_mailer_host%',
+    'port'       => '%mautic.password_reset_mailer_port%',
+    'username'   => '%mautic.password_reset_mailer_user%',
+    'password'   => '%mautic.password_reset_mailer_password%',
+    'encryption' => '%mautic.password_reset_mailer_encryption%',
+    'auth_mode'  => '%mautic.password_reset_mailer_auth_mode%',
+],
+    ],*/
 
 //KnpMenu Configuration
 $container->loadFromExtension('knp_menu', [

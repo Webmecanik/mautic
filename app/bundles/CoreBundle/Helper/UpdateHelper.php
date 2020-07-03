@@ -129,6 +129,7 @@ class UpdateHelper
         $updateStability = $this->coreParametersHelper->get('update_stability');
 
         try {
+            // @todo
             if (!$overrideCache && is_readable($cacheFile)) {
                 return $this->checkCachedUpdateData($cacheFile, $updateStability);
             }
@@ -141,6 +142,7 @@ class UpdateHelper
 
         // Fetch the latest version
         try {
+            // @todo
             $release = $this->fetchLatestCompatibleVersion($updateStability);
         } catch (LatestVersionSupportedException $exception) {
             return [

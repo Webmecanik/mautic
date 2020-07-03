@@ -1,3 +1,4 @@
+
 # Use the front controller as index file. It serves as a fallback solution when
 # every other rewrite/redirect fails (e.g. in an aliased environment without
 # mod_rewrite). Additionally, this reduces the matching process for the
@@ -42,6 +43,7 @@
     RewriteRule .? - [L]
 
     # Rewrite all other queries to the front controller.
+	RewriteCond %{REQUEST_URI} !atmt_admin 
     RewriteRule .? %{ENV:BASE}/index.php [L]
 </IfModule>
 

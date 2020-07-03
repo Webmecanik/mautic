@@ -13,12 +13,12 @@ namespace Mautic\CoreBundle\Helper;
 
 use Mautic\CoreBundle\Loader\ParameterLoader;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\ParameterBag;
+use Symfony\Component\Templating\Helper\Helper;
 
 /**
  * Class CoreParametersHelper.
  */
-class CoreParametersHelper
+class CoreParametersHelper extends Helper
 {
     /**
      * @var ParameterBag
@@ -43,6 +43,11 @@ class CoreParametersHelper
         $this->container  = $container;
 
         $this->resolveParameters();
+    }
+
+    public function getName()
+    {
+        return 'core_parameters';
     }
 
     public function get($name, $default = null)

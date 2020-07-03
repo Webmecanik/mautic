@@ -91,6 +91,11 @@ return [
                 'controller' => 'MauticUserBundle:Api\UserApi:isGranted',
                 'method'     => 'POST',
             ],
+            'mautic_api_useradd' => [
+                'path'       => '/users/add',
+                'controller' => 'MauticUserBundle:Api\UserApi:newEntity',
+                'method'     => 'POST',
+            ],
             'mautic_api_getuserroles' => [
                 'path'       => '/users/list/roles',
                 'controller' => 'MauticUserBundle:Api\UserApi:getRoles',

@@ -41,12 +41,30 @@
             <footer id="app-footer">
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-xs-6 text-muted"><?php echo $view['translator']->trans('mautic.core.copyright', ['%date%' => date('Y')]); ?></div>
-                        <div class="col-xs-6 text-muted text-right small">v<?php
+						<?php // version_atmt
+                            $copyright = $view['translator']->trans('mautic.core.copyright', ['%date%' => date('Y')]);
+
+                            if (!is_null($view['core_parameters']->getParameter('custom_copyright_footer'))) {
+                                $custom_copyright_footer = $view['core_parameters']->getParameter('custom_copyright_footer');
+                            } else {
+                                $custom_copyright_footer = '<a href="http://www.webmecanik.com">Webmecanik</a>';
+                            }
+                            $copyright = str_replace('Mautic', 'Mautic / '.$custom_copyright_footer, $copyright)
+                        ?>
+						<script>
+                            (function(w,d,t,u,n,a,m){w['MauticTrackingObject']=n;
+                                w[n]=w[n]||function(){(w[n].q=w[n].q||[]).push(arguments)},a=d.createElement(t),
+                                m=d.getElementsByTagName(t)[0];a.async=1;a.src=u;m.parentNode.insertBefore(a,m)
+                            })(window,document,'script','https://webmecanik.automation.webmecanik.com/mtc.js','mt');
+
+                            mt('send', 'pageview');
+                        </script>
+                        <div class="col-xs-6 text-muted"><?php echo $copyright ?></div>
+                        <div class="col-xs-6 text-muted text-right small">v
+                            <?php
                             /** @var \Mautic\CoreBundle\Templating\Helper\VersionHelper $version */
                             $version = $view['version'];
-                            echo $version->getVersion(); ?>
-                        </div>
+                            echo $version->getVersion(); ?>></div>
                     </div>
                 </div>
             </footer>
