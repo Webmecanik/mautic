@@ -60,5 +60,9 @@ $myCutomRestrictedConfigFields = [
     'saml_idp_own_password',
 ];
 
+if (!isset($restrictedConfigFields)) {
+    $restrictedConfigFields = [];
+}
+
 $restrictedConfigFields = array_merge($restrictedConfigFields, $myCutomRestrictedConfigFields);
 $container->setParameter('mautic.security.restrictedConfigFields', $restrictedConfigFields);
