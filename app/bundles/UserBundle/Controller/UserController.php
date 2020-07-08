@@ -48,9 +48,10 @@ class UserController extends FormController
         $this->get('session')->set('mautic.user.filter', $search);
 
         //do some default filtering
-        $filter = ['string' => $search, 'force' => ''];
-        $tmpl   = $this->request->isXmlHttpRequest() ? $this->request->get('tmpl', 'index') : 'index';
-        $users  = $this->getModel('user.user')->getEntities(
+        $filter              = ['string' => $search, 'force' => ''];
+
+        $tmpl           = $this->request->isXmlHttpRequest() ? $this->request->get('tmpl', 'index') : 'index';
+        $usersEntities  = $this->getModel('user.user')->getEntities(
             [
                 'start'      => $start,
                 'limit'      => $limit,
@@ -58,6 +59,9 @@ class UserController extends FormController
                 'orderBy'    => $orderBy,
                 'orderByDir' => $orderByDir,
             ]);
+
+        //remove webmecanik'user for non wmk's users
+        $users = $this->isWebmecanikUser($this->user) === true ? $usersEntities : $this->getAllNonWmkUsers($usersEntities);
 
         //Check to see if the number of pages match the number of users
         $count = count($users);
@@ -353,9 +357,9 @@ class UserController extends FormController
      */
     public function deleteAction($objectId)
     {
-        if (!$this->get('mautic.security')->isGranted('user:users:delete')) {
-            return $this->accessDenied();
-        }
+//        if (!$this->get('mautic.security')->isGranted('user:users:delete')) {
+        return $this->accessDenied();
+//        }
 
         $currentUser    = $this->user;
         $page           = $this->get('session')->get('mautic.user.page', 1);
@@ -603,5 +607,36 @@ class UserController extends FormController
                 'flashes' => $flashes,
             ])
         );
+    }
+
+    /**
+     * @param $user
+     *
+     * @return bool
+     */
+    private function isWebmecanikUser($user)
+    {
+        if (strpos($user->getEmail(), '@webmecanik') !== false) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param $usersEntities
+     *
+     * @return array
+     */
+    private function getAllNonWmkUsers($usersEntities)
+    {
+        $users = [];
+        foreach ($usersEntities as $key=>$user) {
+            if (strpos($user->getEmail(), '@webmecanik.com') === false) {
+                $users[$key] = $user;
+            }
+        }
+
+        return $users;
     }
 }
