@@ -31,6 +31,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class ContactTracker
 {
     use DefaultValueTrait;
+
     /**
      * @var LeadRepository
      */
@@ -257,7 +258,7 @@ class ContactTracker
     /**
      * @return Lead|null
      */
-    private function getContactByTrackedDevice()
+    public function getContactByTrackedDevice()
     {
         $lead = null;
 

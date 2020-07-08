@@ -789,13 +789,15 @@ class SubmissionModel extends CommonFormModel
 
         if (!$inKioskMode) {
             // Default to currently tracked lead
-            if ($currentLead = $this->contactTracker->getContact()) {
-                $lead          = $currentLead;
+            if ($trackedContact = $this->contactTracker->getContactByTrackedDevice()) {
+                $lead          = $trackedContact;
                 $leadId        = $lead->getId();
                 $currentFields = $lead->getProfileFields();
+                $this->logger->debug('FORM: Not in kiosk mode so using current contact ID #'.$leadId);
+            } else {
+                $lead->setNewlyCreated(true);
+                $this->logger->debug('FORM: Not in kiosk mode and current tracked contact doesn\'t exist, create a new contact');
             }
-
-            $this->logger->debug('FORM: Not in kiosk mode so using current contact ID #'.$leadId);
         } else {
             // Default to a new lead in kiosk mode
             $lead->setNewlyCreated(true);
