@@ -318,28 +318,6 @@ class MailHelper
     }
 
     /**
-     * **Automation only**
-     * Use Webmecanik Mailjet key when sending password reset emails.
-     *
-     * Mirrors previous MauticFactory functionality.
-     *
-     * @param bool $cleanSlate
-     *
-     * @return $this
-     */
-    public function getPasswordResetMailer($cleanSlate = true)
-    {
-        $factory = $this->factory;
-        $mailer  = $this->factory->get('swiftmailer.mailer.password_reset_mailer');
-        $from    = [
-            $factory->getParameter('password_reset_mailer_from_email') => $factory->getParameter('password_reset_mailer_from_name'),
-        ];
-        $mailHelper = new self($factory, $mailer, $from);
-
-        return $mailHelper->getMailer(cleanSlate);
-    }
-
-    /**
      * Send the message.
      *
      * @param bool $dispatchSendEvent

@@ -283,7 +283,7 @@ class UserModel extends FormModel
      */
     public function sendResetEmail(User $user)
     {
-        $mailer = $this->mailHelper->getPasswordResetMailer();
+        $mailer = $this->mailHelper->getMailer();
 
         $resetToken = $this->getResetToken($user);
         $this->em->persist($resetToken);

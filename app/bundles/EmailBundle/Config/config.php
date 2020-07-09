@@ -478,18 +478,6 @@ return [
                     '%mautic.mailer_port%',
                 ],
             ],
-            'mautic.transport.resetpassword' => [
-                'class'        => \Mautic\EmailBundle\Swiftmailer\Transport\MailjetTransport::class,
-                'serviceAlias' => 'swiftmailer.mailer.transport.%s',
-                'arguments'    => [
-                    '%mautic.mailer_mailjet_sandbox%',
-                    '%mautic.mailer_mailjet_sandbox_default_mail%',
-                ],
-                'methodCalls' => [
-                    'setUsername' => ['%mautic.password_reset_mailer_user%'],
-                    'setPassword' => ['%mautic.password_reset_mailer_password%'],
-                ],
-            ],
             'mautic.transport.sendgrid' => [
                 'class'        => \Mautic\EmailBundle\Swiftmailer\Transport\SendgridTransport::class,
                 'serviceAlias' => 'swiftmailer.mailer.transport.%s',
@@ -881,16 +869,5 @@ return [
         'mailer_mailjet_sandbox'              => false,
         'mailer_mailjet_sandbox_default_mail' => null,
         'disable_trackable_urls'              => false,
-        'password_reset_mailer_transport'     => 'mautic.transport.resetpassword',
-        'password_reset_mailer_host'          => null,
-        'password_reset_mailer_port'          => null,
-        'password_reset_mailer_user'          => '5ab29ebb0e9f2dc09c7280b6400cc164',
-        'password_reset_mailer_password'      => 'e2cd378d06d869281defbeb4147509da',
-        'password_reset_mailer_encryption'    => null,
-        'password_reset_mailer_auth_mode'     => null,
-        'password_reset_mailer_from_email'    => 'support@webmecanik.com',
-        'password_reset_mailer_from_name'     => 'Support Webmecanik',
-        'password_reset_mailer_spool_type'    => 'memory',
-        'password_reset_mailer_spool_path'    => '%kernel.root_dir%/spool',
     ],
 ];
