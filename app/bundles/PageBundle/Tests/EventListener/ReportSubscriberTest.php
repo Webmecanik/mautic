@@ -16,6 +16,7 @@ use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Mautic\CoreBundle\Helper\Chart\ChartQuery;
 use Mautic\LeadBundle\Model\CompanyReportData;
+use Mautic\LeadBundle\Report\FieldsBuilder;
 use Mautic\PageBundle\Entity\HitRepository;
 use Mautic\PageBundle\EventListener\ReportSubscriber;
 use Mautic\ReportBundle\Entity\Report;
@@ -47,8 +48,14 @@ class ReportSubscriberTest extends WebTestCase
      */
     private $subscriber;
 
+    /**
+     * @var FieldsBuilder|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $fieldBuilderMock;
+
     public function setUp()
     {
+        $this->fieldBuilderMock = $this->createMock(FieldsBuilder::class);
         parent::setUp();
         defined('MAUTIC_TABLE_PREFIX') or define('MAUTIC_TABLE_PREFIX', '');
 
@@ -211,7 +218,7 @@ class ReportSubscriberTest extends WebTestCase
             ->method('getContext')
             ->willReturn('page.hits');
 
-        $mockEvent->expects($this->once())
+        $mockEvent->expects($this->exactly(2))
             ->method('getReport')
             ->willReturn($reportMock);
 

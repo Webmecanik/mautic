@@ -192,6 +192,7 @@ return [
                     'doctrine.dbal.default_connection',
                     'mautic.lead.model.company_report_data',
                     'mautic.email.repository.stat',
+                    'mautic.lead.reportbundle.fields_builder',
                 ],
             ],
             'mautic.email.leadbundle.subscriber' => [

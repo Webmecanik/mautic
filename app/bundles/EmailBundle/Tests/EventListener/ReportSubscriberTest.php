@@ -19,6 +19,7 @@ use Mautic\EmailBundle\Entity\StatRepository;
 use Mautic\EmailBundle\EventListener\ReportSubscriber;
 use Mautic\LeadBundle\Entity\DoNotContact;
 use Mautic\LeadBundle\Model\CompanyReportData;
+use Mautic\LeadBundle\Report\FieldsBuilder;
 use Mautic\ReportBundle\Event\ReportGraphEvent;
 use Symfony\Component\Translation\TranslatorInterface;
 
@@ -40,6 +41,7 @@ class ReportSubscriberTest extends \PHPUnit\Framework\TestCase
         $this->connectionMock        = $this->createMock(Connection::class);
         $this->companyReportDataMock = $this->createMock(CompanyReportData::class);
         $this->statRepository        = $this->createMock(StatRepository::class);
+        $this->fieldBuilderMock      = $this->createMock(FieldsBuilder::class);
         $this->subscriber            = new ReportSubscriber(
             $this->connectionMock,
             $this->companyReportDataMock,
