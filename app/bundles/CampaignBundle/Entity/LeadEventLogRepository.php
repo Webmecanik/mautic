@@ -392,8 +392,7 @@ class LeadEventLogRepository extends CommonRepository
             return new ArrayCollection();
         }
 
-        $this->getSlaveConnection($limiter);
-
+        // We cannot use a slave connection here, due to replication delay on large batches.
         $q = $this->createQueryBuilder('o');
 
         $q->select('o, e, c')
@@ -530,7 +529,7 @@ class LeadEventLogRepository extends CommonRepository
      */
     public function hasBeenInCampaignRotation($contactId, $campaignId, $rotation)
     {
-        $qb = $this->getEntityManager()->getConnection()->createQueryBuilder();
+        $qb = $this->getSlaveConnection()->createQueryBuilder();
         $qb->select('log.rotation')
             ->from(MAUTIC_TABLE_PREFIX.'campaign_lead_event_log', 'log')
             ->where(
@@ -551,6 +550,46 @@ class LeadEventLogRepository extends CommonRepository
     }
 
     /**
+     * Find a duplicate log entry based on the campaign_rotation unique constraint.
+     *
+     * @param LeadEventLog $log
+     *
+     * @return LeadEventLog|null
+     */
+    public function findDuplicate(LeadEventLog $log)
+    {
+        $this->getSlaveConnection();
+        $entities = $this->getEntities(
+            [
+                'limit'            => 1,
+                'ignore_paginator' => true,
+                'filter'           => [
+                    'force' => [
+                        [
+                            'column' => 'll.event',
+                            'expr'   => 'eq',
+                            'value'  => $log->getEvent()->getId(),
+                        ],
+                        [
+                            'column' => 'll.lead',
+                            'expr'   => 'eq',
+                            'value'  => $log->getLead()->getId(),
+                        ],
+                        [
+                            'column' => 'll.rotation',
+                            'expr'   => 'eq',
+                            'value'  => $log->getRotation(),
+                        ],
+                    ],
+                ],
+            ]
+        );
+
+        return $entities ? reset($entities) : null;
+    }
+
+    /**
+     * @param Lead   $campaignMember
      * @param string $message
      *
      * @throws \Doctrine\DBAL\DBALException

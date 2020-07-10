@@ -111,7 +111,7 @@ class CampaignActionJumpToEventSubscriber implements EventSubscriberInterface
                 );
             }
         } else {
-            $this->eventExecutioner->executeForContacts($jumpTarget, $campaignEvent->getContacts());
+            $this->eventExecutioner->executeForContacts($jumpTarget, $campaignEvent->getContactsKeyedById());
             $campaignEvent->passRemaining();
         }
     }
