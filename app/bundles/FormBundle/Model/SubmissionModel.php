@@ -58,84 +58,36 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class SubmissionModel extends CommonFormModel
 {
-    /**
-     * @var IpLookupHelper
-     */
     protected $ipLookupHelper;
 
-    /**
-     * @var TemplatingHelper
-     */
     protected $templatingHelper;
 
-    /**
-     * @var FormModel
-     */
     protected $formModel;
 
-    /**
-     * @var PageModel
-     */
     protected $pageModel;
 
-    /**
-     * @var LeadModel
-     */
     protected $leadModel;
 
-    /**
-     * @var CampaignModel
-     */
     protected $campaignModel;
 
-    /**
-     * @var MembershipManager
-     */
     protected $membershipManager;
 
-    /**
-     * @var LeadFieldModel
-     */
     protected $leadFieldModel;
 
-    /**
-     * @var CompanyModel
-     */
     protected $companyModel;
 
-    /**
-     * @var FormFieldHelper
-     */
     protected $fieldHelper;
 
-    /**
-     * @var UploadFieldValidator
-     */
     private $uploadFieldValidator;
 
-    /**
-     * @var FormUploader
-     */
     private $formUploader;
 
-    /**
-     * @var DeviceTrackingServiceInterface
-     */
     private $deviceTrackingService;
 
-    /**
-     * @var FieldValueTransformer
-     */
     private $fieldValueTransformer;
 
-    /**
-     * @var DateHelper
-     */
     private $dateHelper;
 
-    /**
-     * @var ContactTracker
-     */
     private $contactTracker;
 
     public function __construct(
@@ -231,13 +183,14 @@ class SubmissionModel extends CommonFormModel
         // Get a list of components to build custom fields from
         $components = $this->formModel->getCustomComponents();
 
-        $fields           = $form->getFields();
-        $fieldArray       = [];
-        $results          = [];
-        $tokens           = [];
-        $leadFieldMatches = [];
-        $validationErrors = [];
-        $filesToUpload    = new UploadFileCrate();
+        $fields                       = $form->getFields();
+        $fieldArray                   = [];
+        $results                      = [];
+        $tokens                       = [];
+        $leadFieldMatches             = [];
+        $leadFieldMatchesNotOverwrite = [];
+        $validationErrors             = [];
+        $filesToUpload                = new UploadFileCrate();
 
         /** @var Field $f */
         foreach ($fields as $f) {
@@ -340,6 +293,10 @@ class SubmissionModel extends CommonFormModel
                 $leadValue = $value;
 
                 $leadFieldMatches[$leadField] = $leadValue;
+
+                if ($f->isLeadFieldNotOverwrite()) {
+                    $leadFieldMatchesNotOverwrite[] = $leadField;
+                }
             }
 
             //convert array from checkbox groups and multiple selects
@@ -384,7 +341,7 @@ class SubmissionModel extends CommonFormModel
 
         // Create/update lead
         if (!empty($leadFieldMatches)) {
-            $lead = $this->createLeadFromSubmit($form, $leadFieldMatches, $leadFields);
+            $lead = $this->createLeadFromSubmit($form, $leadFieldMatches, $leadFields, $leadFieldMatchesNotOverwrite);
         }
 
         $trackedDevice = $this->deviceTrackingService->getTrackedDevice();
@@ -778,7 +735,7 @@ class SubmissionModel extends CommonFormModel
      *
      * @throws ORMException
      */
-    protected function createLeadFromSubmit(Form $form, array $leadFieldMatches, $leadFields)
+    protected function createLeadFromSubmit(Form $form, array $leadFieldMatches, $leadFields, $notOverwriteFields = [])
     {
         //set the mapped data
         $inKioskMode   = $form->isInKioskMode();
@@ -953,6 +910,19 @@ class SubmissionModel extends CommonFormModel
         }
 
         //set the mapped fields
+
+        // not overwrite if value exist
+        if (!empty($notOverwriteFields)) {
+            $this->logger->debug('FORM: Not overwrite contact fields to process '.implode(',', $notOverwriteFields));
+            $profileFields = $lead->getProfileFields();
+            foreach ($notOverwriteFields as $notOverwriteField) {
+                if (isset($data[$notOverwriteField])
+                    && isset($profileFields[$notOverwriteField])
+                    && '' !== $profileFields[$notOverwriteField]) {
+                    unset($data[$notOverwriteField]);
+                }
+            }
+        }
         $this->leadModel->setFieldValues($lead, $data, false, true, true);
 
         // last active time
