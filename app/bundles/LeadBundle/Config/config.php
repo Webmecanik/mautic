@@ -476,6 +476,7 @@ return [
                 'arguments' => [
                     'translator',
                     'router',
+                    'mautic.security'
                 ],
             ],
             'mautic.lead.import.subscriber' => [

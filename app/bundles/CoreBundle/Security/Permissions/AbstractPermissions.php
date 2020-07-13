@@ -206,7 +206,7 @@ abstract class AbstractPermissions
         if (!isset($userPermissions[$name])) {
             //the user doesn't have implicit access
             return false;
-        } elseif ($this->permissions[$name]['full'] & $userPermissions[$name]) {
+        } elseif (isset($this->permissions[$name]['full']) && $this->permissions[$name]['full'] & $userPermissions[$name]) {
             return true;
         } else {
             //otherwise test for specific level
@@ -281,11 +281,10 @@ abstract class AbstractPermissions
         foreach ($this->permissions as $level => $perms) {
             $perms = array_keys($perms);
             $totalAvailable += count($perms);
-
             if (in_array('full', $perms)) {
                 if (1 === count($perms)) {
                     //full is the only permission so count as 1
-                    if (!empty($data[$level]) && in_array('full', $data[$level])) {
+                    if (!empty($data[$level]) && !in_array('full', $data[$level])) {
                         ++$totalGranted;
                     }
                 } else {
@@ -422,6 +421,38 @@ abstract class AbstractPermissions
                 'level'             => $level,
             ]
         );
+    }
+
+    /**
+     * Add custom permissions.
+     *
+     * @param $level
+     * @param $permissions
+     */
+    protected function addCustomPermission($level, $permissions)
+    {
+        $this->permissions[$level] = $permissions;
+    }
+
+    /**
+     * Adds a custom permission to the form builder, i.e. config only bundles.
+     *
+     * @param string               $bundle
+     * @param                      $level
+     * @param FormBuilderInterface $builder
+     * @param                      $label
+     * @param                      $choices
+     * @param array                $data
+     */
+    protected function addCustomFormFields($bundle, $level, &$builder, $label, $choices, $data)
+    {
+        $builder->add("$bundle:$level", PermissionListType::class, [
+            'choices' => $choices,
+            'label'   => $label,
+            'data'    => (!empty($data[$level]) ? $data[$level] : []),
+            'bundle'  => $bundle,
+            'level'   => $level,
+        ]);
     }
 
     /**
