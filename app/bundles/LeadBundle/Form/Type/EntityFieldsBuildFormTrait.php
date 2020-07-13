@@ -272,7 +272,12 @@ trait EntityFieldsBuildFormTrait
                         case MultiselectType::class:
                             $constraints[] = new Length(['max' => 65535]);
                             break;
-                        break;
+
+                        case 'textarea':
+                            if (!empty($properties['allowHtml'])) {
+                                $cleaningRules[$field['alias']] = 'html';
+                            }
+                            break;
                     }
 
                     $attr['class']            = 'form-control';
