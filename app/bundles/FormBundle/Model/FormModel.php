@@ -571,18 +571,19 @@ class FormModel extends CommonFormModel
         $html = $this->templatingHelper->getTemplating()->render(
             $theme.'MauticFormBundle:Builder:form.html.php',
             [
-                'fieldSettings' => $this->getCustomComponents()['fields'],
-                'fields'        => $fields,
-                'contactFields' => $this->leadFieldModel->getFieldListWithProperties(),
-                'companyFields' => $this->leadFieldModel->getFieldListWithProperties('company'),
-                'form'          => $entity,
-                'theme'         => $theme,
-                'submissions'   => $submissions,
-                'lead'          => $lead,
-                'formPages'     => $pages,
-                'lastFormPage'  => $lastPage,
-                'style'         => $style,
-                'inBuilder'     => false,
+                'fieldSettings'  => $this->getCustomComponents()['fields'],
+                'viewOnlyFields' => $this->getCustomComponents()['viewOnlyFields'],
+                'fields'         => $fields,
+                'contactFields'  => $this->leadFieldModel->getFieldListWithProperties(),
+                'companyFields'  => $this->leadFieldModel->getFieldListWithProperties('company'),
+                'form'           => $entity,
+                'theme'          => $theme,
+                'submissions'    => $submissions,
+                'lead'           => $lead,
+                'formPages'      => $pages,
+                'lastFormPage'   => $lastPage,
+                'style'          => $style,
+                'inBuilder'      => false,
             ]
         );
 
@@ -1136,5 +1137,21 @@ class FormModel extends CommonFormModel
         }
 
         return $list;
+    }
+
+    /**
+     * @param string $fieldAlias
+     *
+     * @return Field|null
+     */
+    public function findFormFieldByAlias(Form $form, $fieldAlias)
+    {
+        foreach ($form->getFields() as $field) {
+            if ($field->getAlias() === $fieldAlias) {
+                return $field;
+            }
+        }
+
+        return null;
     }
 }
