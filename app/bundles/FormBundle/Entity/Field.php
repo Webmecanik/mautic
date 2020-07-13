@@ -11,9 +11,12 @@
 
 namespace Mautic\FormBundle\Entity;
 
+use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Mautic\ApiBundle\Serializer\Driver\ApiMetadataDriver;
 use Mautic\CoreBundle\Doctrine\Mapping\ClassMetadataBuilder;
+use Mautic\FormBundle\ProgressiveProfiling\DisplayManager;
 use Mautic\LeadBundle\Entity\Lead;
 
 class Field
@@ -89,6 +92,11 @@ class Field
     private $validation = [];
 
     /**
+     * @var array
+     */
+    private $conditions = [];
+
+    /**
      * @var Form
      */
     private $form;
@@ -139,6 +147,16 @@ class Field
      * @var int
      */
     private $showAfterXSubmissions;
+
+    /**
+     * @var bool
+     */
+    private $alwaysDisplay;
+
+    /**
+     * @var string
+     */
+    private $parent;
 
     /**
      * @var bool
@@ -216,6 +234,9 @@ class Field
             ->nullable()
             ->build();
 
+        $builder->addNullableField('parent', 'string', 'parent_id');
+        $builder->addNullableField('conditions', 'json_array');
+
         $builder->createManyToOne('form', 'Form')
             ->inversedBy('fields')
             ->addJoinColumn('form_id', 'id', false, false, 'CASCADE')
@@ -238,6 +259,8 @@ class Field
         $builder->addNullableField('showWhenValueExists', 'boolean', 'show_when_value_exists');
 
         $builder->addNullableField('showAfterXSubmissions', 'integer', 'show_after_x_submissions');
+
+        $builder->addNullableField('alwaysDisplay', Types::BOOLEAN, 'always_display');
     }
 
     /**
@@ -262,6 +285,8 @@ class Field
                     'order',
                     'properties',
                     'validation',
+                    'parent',
+                    'conditions',
                     'labelAttributes',
                     'inputAttributes',
                     'containerAttributes',
@@ -854,13 +879,14 @@ class Field
     /**
      * Decide if the field should be displayed based on thr progressive profiling conditions.
      *
-     * @param array|null $submissions
-     * @param Lead       $lead
-     * @param Form       $form
+     * @param array|null          $submissions
+     * @param Lead                $lead
+     * @param Form                $form
+     * @param DisplayManager|null $displayManager
      *
      * @return bool
      */
-    public function showForContact($submissions = null, Lead $lead = null, Form $form = null)
+    public function showForContact($submissions = null, Lead $lead = null, Form $form = null, DisplayManager $displayManager = null)
     {
         // Always show in the kiosk mode
         if (null !== $form && true === $form->getInKioskMode()) {
@@ -868,11 +894,11 @@ class Field
         }
 
         // Hide the field if there is the submission count limit and hide it until the limit is overcame
-        if ($this->showAfterXSubmissions > 0 && $this->showAfterXSubmissions > count($submissions)) {
+        if (!$this->alwaysDisplay && $this->showAfterXSubmissions > 0 && $this->showAfterXSubmissions > count($submissions)) {
             return false;
         }
 
-        if (false === $this->showWhenValueExists) {
+        if (!$this->alwaysDisplay && false === $this->showWhenValueExists) {
             // Hide the field if there is the value condition and if we already know the value for this field
             if ($submissions) {
                 foreach ($submissions as $submission) {
@@ -888,7 +914,54 @@ class Field
             }
         }
 
+        if ($displayManager && $displayManager->useProgressiveProfilingLimit()) {
+            if ($displayManager->showForField($this)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
         return true;
+    }
+
+    /**
+     * Was field displayed.
+     *
+     * @return bool
+     */
+    public function showForConditionalField(array $data)
+    {
+        if (!$parentField = $this->findParentFieldInForm()) {
+            return true;
+        }
+
+        if (!isset($data[$parentField->getAlias()])) {
+            return false;
+        }
+
+        $sendValues = $data[$parentField->getAlias()];
+        if (!is_array($sendValues)) {
+            $sendValues = [$sendValues];
+        }
+
+        foreach ($sendValues as $value) {
+            // any value
+            if ($value && !empty($this->conditions['any'])) {
+                return true;
+            }
+
+            if ('notIn' === $this->conditions['expr']) {
+                // value not matched
+                if ($value && !in_array($value, $this->conditions['values'], true)) {
+                    return true;
+                }
+            } elseif (in_array($value, $this->conditions['values'], true)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -905,6 +978,78 @@ class Field
     public function isFileType()
     {
         return 'file' === $this->type;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAlwaysDisplay()
+    {
+        return $this->alwaysDisplay;
+    }
+
+    /**
+     * @param bool $alwaysDisplay
+     */
+    public function setAlwaysDisplay($alwaysDisplay)
+    {
+        $this->alwaysDisplay = $alwaysDisplay;
+    }
+
+    /**
+     * @return array
+     */
+    public function getConditions()
+    {
+        return $this->conditions;
+    }
+
+    /**
+     * @param array $conditions
+     *
+     * @return Field
+     */
+    public function setConditions($conditions)
+    {
+        $this->isChanged('conditions', $conditions);
+        $this->conditions = $conditions;
+
+        return $this;
+    }
+
+    /**
+     * @param string $parent
+     *
+     * @return string
+     */
+    public function setParent($parent)
+    {
+        $this->isChanged('parent', $parent);
+        $this->parent = $parent;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    private function findParentFieldInForm()
+    {
+        if (!$this->parent) {
+            return;
+        }
+
+        $fields = $this->getForm()->getFields();
+        foreach ($fields as $field) {
+            if (intval($field->getId()) === intval($this->parent)) {
+                return $field;
+            }
+        }
     }
 
     /**

@@ -38,6 +38,7 @@ use Mautic\FormBundle\Exception\ValidationException;
 use Mautic\FormBundle\FormEvents;
 use Mautic\FormBundle\Helper\FormFieldHelper;
 use Mautic\FormBundle\Helper\FormUploader;
+use Mautic\FormBundle\ProgressiveProfiling\DisplayManager;
 use Mautic\FormBundle\Validator\UploadFieldValidator;
 use Mautic\LeadBundle\DataObject\LeadManipulator;
 use Mautic\LeadBundle\Entity\Company;
@@ -224,6 +225,10 @@ class SubmissionModel extends CommonFormModel
                 }
             }
 
+            if (!$f->showForConditionalField($post)) {
+                continue;
+            }
+
             if ('' === $value && $f->isRequired()) {
                 //field is required, but hidden from form because of 'ShowWhenValueExists'
                 if (false === $f->getShowWhenValueExists() && !isset($post[$alias])) {
@@ -327,8 +332,11 @@ class SubmissionModel extends CommonFormModel
         if ($lead && $form->usesProgressiveProfiling()) {
             $leadSubmissions = $this->formModel->getLeadSubmissions($form, $lead->getId());
 
+            $displayManager = new DisplayManager($form, $this->formModel->getCustomComponents()['viewOnlyFields']);
             foreach ($fields as $field) {
-                if (isset($validationErrors[$field->getAlias()]) && !$field->showForContact($leadSubmissions, $lead, $form)) {
+                if ($field->showForContact($leadSubmissions, $lead, $form, $displayManager)) {
+                    $displayManager->increaseDisplayedFields($field);
+                } elseif (isset($validationErrors[$field->getAlias()])) {
                     unset($validationErrors[$field->getAlias()]);
                 }
             }

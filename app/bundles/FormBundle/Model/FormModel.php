@@ -270,8 +270,16 @@ class FormModel extends CommonFormModel
             }
             $field->setForm($entity);
             $field->setSessionId($key);
-            $field->setOrder($order);
-            ++$order;
+            if (!$field->getParent()) {
+                $field->setOrder($order);
+                ++$order;
+            } else {
+                if (isset($sessionFields[$field->getParent()]['order'])) {
+                    $field->setOrder($sessionFields[$field->getParent()]['order']);
+                } else {
+                    $field->setOrder($order);
+                }
+            }
             $entity->addField($properties['id'], $field);
         }
 
@@ -563,18 +571,19 @@ class FormModel extends CommonFormModel
         $html = $this->templatingHelper->getTemplating()->render(
             $theme.'MauticFormBundle:Builder:form.html.php',
             [
-                'fieldSettings' => $this->getCustomComponents()['fields'],
-                'fields'        => $fields,
-                'contactFields' => $this->leadFieldModel->getFieldListWithProperties(),
-                'companyFields' => $this->leadFieldModel->getFieldListWithProperties('company'),
-                'form'          => $entity,
-                'theme'         => $theme,
-                'submissions'   => $submissions,
-                'lead'          => $lead,
-                'formPages'     => $pages,
-                'lastFormPage'  => $lastPage,
-                'style'         => $style,
-                'inBuilder'     => false,
+                'fieldSettings'  => $this->getCustomComponents()['fields'],
+                'viewOnlyFields' => $this->getCustomComponents()['viewOnlyFields'],
+                'fields'         => $fields,
+                'contactFields'  => $this->leadFieldModel->getFieldListWithProperties(),
+                'companyFields'  => $this->leadFieldModel->getFieldListWithProperties('company'),
+                'form'           => $entity,
+                'theme'          => $theme,
+                'submissions'    => $submissions,
+                'lead'           => $lead,
+                'formPages'      => $pages,
+                'lastFormPage'   => $lastPage,
+                'style'          => $style,
+                'inBuilder'      => false,
             ]
         );
 
@@ -1081,10 +1090,23 @@ class FormModel extends CommonFormModel
             return;
         }
 
+        $list = $this->getContactFieldPropertiesList($contactFieldAlias);
+
+        if (!empty($list)) {
+            $formFieldProps['list'] = ['list' => $list];
+            if (array_key_exists('optionlist', $formFieldProps)) {
+                $formFieldProps['optionlist'] = ['list' => $list];
+            }
+            $formField->setProperties($formFieldProps);
+        }
+    }
+
+    public function getContactFieldPropertiesList(string $contactFieldAlias): ?array
+    {
         $contactField = $this->leadFieldModel->getEntityByAlias($contactFieldAlias);
 
         if (empty($contactField) || !in_array($contactField->getType(), ContactFieldHelper::getListTypes())) {
-            return;
+            return null;
         }
 
         $contactFieldProps = $contactField->getProperties();
@@ -1093,7 +1115,7 @@ class FormModel extends CommonFormModel
             case 'select':
             case 'multiselect':
             case 'lookup':
-                $list = isset($contactFieldProps['list']) ? $contactFieldProps['list'] : [];
+                $list = $contactFieldProps['list'] ?? [];
                 break;
             case 'boolean':
                 $list = [$contactFieldProps['no'], $contactFieldProps['yes']];
@@ -1111,16 +1133,10 @@ class FormModel extends CommonFormModel
                 $list = ContactFieldHelper::getLocaleChoices();
                 break;
             default:
-                return;
+                return null;
         }
 
-        if (!empty($list)) {
-            $formFieldProps['list'] = ['list' => $list];
-            if (array_key_exists('optionlist', $formFieldProps)) {
-                $formFieldProps['optionlist'] = ['list' => $list];
-            }
-            $formField->setProperties($formFieldProps);
-        }
+        return $list;
     }
 
     /**
