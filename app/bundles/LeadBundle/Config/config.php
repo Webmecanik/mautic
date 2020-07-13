@@ -472,10 +472,6 @@ return [
                     'router',
                     'mautic.security'
                 ],
-                'class'     => \Mautic\LeadBundle\EventListener\ButtonSubscriber::class,
-                'arguments' => [
-                    'mautic.security',
-                ],
             ],
             'mautic.lead.import.subscriber' => [
                 'class'     => Mautic\LeadBundle\EventListener\ImportSubscriber::class,

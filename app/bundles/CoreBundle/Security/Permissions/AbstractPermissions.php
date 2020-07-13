@@ -446,7 +446,7 @@ abstract class AbstractPermissions
      */
     protected function addCustomFormFields($bundle, $level, &$builder, $label, $choices, $data)
     {
-        $builder->add("$bundle:$level", 'permissionlist', [
+        $builder->add("$bundle:$level", PermissionListType::class, [
             'choices' => $choices,
             'label'   => $label,
             'data'    => (!empty($data[$level]) ? $data[$level] : []),
