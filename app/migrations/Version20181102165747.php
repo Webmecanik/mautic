@@ -10,9 +10,9 @@
 
 namespace Mautic\Migrations;
 
-use Doctrine\DBAL\Migrations\SkipMigrationException;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\Migrations\Exception\SkipMigration;
 use Mautic\CoreBundle\Doctrine\AbstractMauticMigration;
 
 /**
@@ -21,9 +21,7 @@ use Mautic\CoreBundle\Doctrine\AbstractMauticMigration;
 class Version20181102165747 extends AbstractMauticMigration
 {
     /**
-     * @param Schema $schema
-     *
-     * @throws SkipMigrationException
+     * @throws SkipMigration
      * @throws \Doctrine\DBAL\Schema\SchemaException
      */
     public function preUp(Schema $schema): void
@@ -35,13 +33,10 @@ class Version20181102165747 extends AbstractMauticMigration
             ->andWhere($qb->expr()->notLike('properties', $qb->expr()->literal('%"fields_to_update";%')))
             ->execute()->fetchColumn();
         if (empty($notUpdateEvents)) {
-            throw new SkipMigrationException('Schema includes this migration');
+            throw new SkipMigration('Schema includes this migration');
         }
     }
 
-    /**
-     * @param Schema $schema
-     */
     public function postUp(Schema $schema): void
     {
         // Check if there are even boolean fields to worry about
@@ -71,9 +66,8 @@ class Version20181102165747 extends AbstractMauticMigration
     }
 
     /**
-     * @param QueryBuilder $qb
-     * @param              $id
-     * @param              $properties
+     * @param $id
+     * @param $properties
      */
     protected function fixRow(QueryBuilder $qb, $id, $properties)
     {
