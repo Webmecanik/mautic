@@ -17,7 +17,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 class UpdateLeadActionType extends AbstractType
 {
-    const FIELD_TYPE_TO_REMOVE_VALUES = ['multiselect'];
     use EntityFieldsBuildFormTrait;
 
     /**
@@ -44,10 +43,6 @@ class UpdateLeadActionType extends AbstractType
                 'hydration_mode' => 'HYDRATE_ARRAY',
             ]
         );
-
-        $options['fields']                      = $leadFields;
-        $options['ignore_required_constraints'] = true;
-        $options['ignore_date_type']            = true;
 
         $builder->add(
             'fields_to_update',

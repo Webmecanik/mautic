@@ -19,13 +19,10 @@ class UpdateFieldType extends AbstractType
 {
     use EntityFieldsBuildFormTrait;
 
-    /**
-     * @param FormBuilderInterface $builder
-     * @param array                $options
-     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $options['ignore_required_constraints'] = true;
+        $options['ignore_date_type']            = true;
 
         $disabled = [];
         foreach ($options['fields'] as $field) {
@@ -39,8 +36,6 @@ class UpdateFieldType extends AbstractType
     }
 
     /**
-     * @param OptionsResolver $resolver
-     *
      * @throws \Symfony\Component\OptionsResolver\Exception\AccessException
      */
     public function configureOptions(OptionsResolver $resolver)

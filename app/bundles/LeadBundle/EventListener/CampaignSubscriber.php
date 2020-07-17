@@ -326,7 +326,7 @@ class CampaignSubscriber implements EventSubscriberInterface
 
         switch (true) {
             case !empty($fieldsToUpdate):
-                $this->leadModel->setFieldValues($lead, CustomFieldHelper::fieldsValuesTransformer($fields, $fieldsToUpdate));
+                $this->leadModel->setFieldValues($lead, CustomFieldHelper::fieldsValuesTransformer($lead->getFields(true), $fieldsToUpdate));
                 // no break
             case !empty($fieldsToEmpty):
                 $this->leadModel->setFieldValues($lead, $fieldsToEmpty, true);
