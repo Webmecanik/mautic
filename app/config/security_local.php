@@ -12,6 +12,59 @@
 // load basic Mautic security
 include_once 'security.php';
 
+// login/logout SSO changes
+unset($firewalls['login']);
+unset($firewalls['main']['simple_form']);
+unset($firewalls['main']['remember_me']);
+
+$firewalls['main']['entry_point'] = 'mautic.security.authenticator.keycloak';
+
+// If oauth2_area enabled, then rewrite settings
+if (isset($firewalls['oauth2_area'])) {
+    $firewalls['oauth2_area'] = [
+        'pattern'   => '^/oauth/v2/authorize',
+        'guard'     => [
+            'provider'       => 'user_provider',
+            'authenticators' => [
+                'mautic.security.authenticator.keycloak',
+            ],
+        ],
+        'anonymous' => true,
+        'context'   => 'mautic',
+    ];
+}
+if (isset($firewalls['oauth1_area'])) {
+    $firewalls['oauth1_area'] = [
+        'pattern' => '^/oauth/v1/authorize',
+        'guard'   => [
+            'provider'       => 'user_provider',
+            'authenticators' => [
+                'mautic.security.authenticator.keycloak',
+            ],
+        ],
+        'anonymous' => true,
+        'context'   => 'mautic',
+    ];
+}
+$firewalls['main']['guard'] = [
+    'provider'       => 'user_provider',
+    'authenticators' => [
+        'mautic.security.authenticator.keycloak',
+    ],
+];
+
+$firewalls['main']['logout'] = [
+    'success_handler' => 'mautic.security.logout_success_handler',
+    'path'            => '/s/logout',
+    'target'          => '%mautic.after_logout_target%',
+];
+
+$container->loadFromExtension('security',
+    [
+        'firewalls' => $firewalls,
+    ]
+);
+
 // disable upgrade notification
 $container->setParameter('mautic.security.disableUpdates', true);
 
