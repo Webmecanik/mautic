@@ -51,7 +51,7 @@ class UserController extends FormController
         $filter              = ['string' => $search, 'force' => ''];
 
         $tmpl           = $this->request->isXmlHttpRequest() ? $this->request->get('tmpl', 'index') : 'index';
-        $usersEntities  = $this->getModel('user.user')->getEntities(
+        $users          = $this->getModel('user.user')->getEntities(
             [
                 'start'      => $start,
                 'limit'      => $limit,
@@ -61,7 +61,7 @@ class UserController extends FormController
             ]);
 
         //remove webmecanik'user for non wmk's users
-        $users = $this->isWebmecanikUser($this->user) === true ? $usersEntities : $this->getAllNonWmkUsers($usersEntities);
+        $users = true === $this->isWebmecanikUser($this->user) ? $users : $this->getAllNonWmkUsers($users);
 
         //Check to see if the number of pages match the number of users
         $count = count($users);
@@ -616,7 +616,7 @@ class UserController extends FormController
      */
     private function isWebmecanikUser($user)
     {
-        if (strpos($user->getEmail(), '@webmecanik') !== false) {
+        if (false !== strpos($user->getEmail(), '@webmecanik')) {
             return true;
         }
 
@@ -632,7 +632,7 @@ class UserController extends FormController
     {
         $users = [];
         foreach ($usersEntities as $key=>$user) {
-            if (strpos($user->getEmail(), '@webmecanik.com') === false) {
+            if (false === strpos($user->getEmail(), '@webmecanik.com')) {
                 $users[$key] = $user;
             }
         }
