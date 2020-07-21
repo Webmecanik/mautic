@@ -165,7 +165,7 @@ ul.tag-cloud li {
 
 .timeline-featured td, .timeline-featured th {
     background: rgba(78, 94, 158, 0.1 );
-    /*border-right: 1px solid rgba(78, 94, 158, 0.1) !important;*/
+    border-right: 1px solid rgba(78, 94, 158, 0.1) !important;
 }
 
 #contact-timeline td {

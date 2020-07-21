@@ -89,7 +89,7 @@ endif;
         </thead>
         <tbody>
         <?php foreach ($items as $item): ?>
-            <tr <?php echo ($item->getId() <= 2) ? ' style="display:none;" ' : ''; ?>>
+            <tr>
                 <td>
                     <?php
                     echo $view->render(

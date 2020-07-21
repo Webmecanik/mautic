@@ -7,13 +7,14 @@
 * @license GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
 */
 $extraMenu              = $view['menu']->render('extra');
-$customSidebarStyle     = $view['core_parameters']->getParameter('custom_sidebar_style');
-$customSidebarLinkStyle = $view['core_parameters']->getParameter('custom_sidebar_link_style');
-$customLogoSrc          = $view['core_parameters']->getParameter('custom_logo_src');
-$customLogoStyle        = $view['core_parameters']->getParameter('custom_logo_style');
-$customLogoTextSrc      = $view['core_parameters']->getParameter('custom_logo_text_src');
-$customLogoTextStyle    = $view['core_parameters']->getParameter('custom_logo_text_style');
-$customMenuStyle        = $view['core_parameters']->getParameter('custom_menu_style');
+$configParameterBag     = (new \Mautic\CoreBundle\Loader\ParameterLoader())->getParameterBag();
+$customSidebarStyle     = $configParameterBag->get('custom_sidebar_style');
+$customSidebarLinkStyle = $configParameterBag->get('custom_sidebar_link_style');
+$customLogoSrc          = $configParameterBag->get('custom_logo_src');
+$customLogoStyle        = $configParameterBag->get('custom_logo_style');
+$customLogoTextSrc      = $configParameterBag->get('custom_logo_text_src');
+$customLogoTextStyle    = $configParameterBag->get('custom_logo_text_style');
+$customMenuStyle        = $configParameterBag->get('custom_menu_style');
 
 $customLogoStyleAttr = '';
 if (!empty($customLogoStyle)) {

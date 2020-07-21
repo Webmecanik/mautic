@@ -474,8 +474,7 @@ return [
                     'service_container',
                 ],
                 'serviceAlias' => 'mautic.config',
-                'alias'        => 'core_parameters',
-            ],
+            ],app/bundles/CoreBundle/Entity/IpAddress.php
             'mautic.helper.bundle' => [
                 'class'     => 'Mautic\CoreBundle\Helper\BundleHelper',
                 'arguments' => [

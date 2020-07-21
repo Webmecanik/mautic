@@ -42,14 +42,15 @@
                 <div class="container-fluid">
                     <div class="row">
 						<?php // version_atmt
-                            $copyright = $view['translator']->trans('mautic.core.copyright', ['%date%' => date('Y')]);
+                        $configParameterBag = (new \Mautic\CoreBundle\Loader\ParameterLoader())->getParameterBag();
+                        $copyright          = $view['translator']->trans('mautic.core.copyright', ['%date%' => date('Y')]);
 
-                            if (!is_null($view['core_parameters']->getParameter('custom_copyright_footer'))) {
-                                $custom_copyright_footer = $view['core_parameters']->getParameter('custom_copyright_footer');
+                            if (!is_null($configParameterBag->get('custom_copyright_footer'))) {
+                                $custom_copyright_footer = $configParameterBag->get('custom_copyright_footer');
                             } else {
                                 $custom_copyright_footer = '<a href="http://www.webmecanik.com">Webmecanik</a>';
                             }
-                            $copyright = str_replace('Mautic', 'Mautic / '.$custom_copyright_footer, $copyright)
+                            $copyright = str_replace('Mautic', 'Mautic / '.$custom_copyright_footer, $copyright);
                         ?>
 						<script>
                             (function(w,d,t,u,n,a,m){w['MauticTrackingObject']=n;
@@ -59,7 +60,7 @@
 
                             mt('send', 'pageview');
                         </script>
-                        <div class="col-xs-6 text-muted"><?php echo $copyright ?></div>
+                        <div class="col-xs-6 text-muted"><?php echo $copyright; ?></div>
                         <div class="col-xs-6 text-muted text-right small">v
                             <?php
                             /** @var \Mautic\CoreBundle\Templating\Helper\VersionHelper $version */

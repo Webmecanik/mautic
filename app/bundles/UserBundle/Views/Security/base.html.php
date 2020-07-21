@@ -9,8 +9,9 @@
 * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
 */
 
-$customLoginLogoSrc          = $view['core_parameters']->getParameter('custom_login_logo_src');
-$customLoginLogoWrapperStyle = $view['core_parameters']->getParameter('custom_login_logo_wrapper_style');
+$configParameterBag          = (new \Mautic\CoreBundle\Loader\ParameterLoader())->getParameterBag();
+$customLoginLogoSrc          = $configParameterBag->get('custom_login_logo_src');
+$customLoginLogoWrapperStyle = $configParameterBag->get('custom_login_logo_wrapper_style');
 
 $customLoginLogoWrapperStyleAttr = '';
 if (!empty($customLoginLogoWrapperStyle)) {
@@ -40,7 +41,7 @@ if (!empty($customLoginLogoWrapperStyle)) {
                 <div class="panel" name="form-login">
                     <div class="panel-body">
                         <div class="mautic-logo img-circle mb-md text-center" <?php echo $customLoginLogoWrapperStyleAttr; ?>>
-  						<img src="<?php echo $view['assets']->getUrl($customLoginLogoSrc)?>" />
+  						<img src="<?php echo $view['assets']->getUrl($customLoginLogoSrc); ?>" />
                         </div>
                         <div id="main-panel-flash-msgs">
                             <?php echo $view->render('MauticCoreBundle:Notification:flashes.html.php'); ?>
