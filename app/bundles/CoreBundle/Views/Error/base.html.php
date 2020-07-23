@@ -18,8 +18,10 @@ if (!$app->getRequest()->isXmlHttpRequest()) {
     }
 }
 
+$configParameterBag = (new \Mautic\CoreBundle\Loader\ParameterLoader())->getParameterBag();
+
 $img = $view['slots']->get('mautibot', 'wave');
-$src = $view['mautibot']->getImage($img);
+$src = $view['assets']->getUrl($configParameterBag->get('custom_exception_logo_src_200'));
 
 $message = $view['slots']->get('message', 'mautic.core.error.generic');
 ?>
@@ -40,7 +42,7 @@ $message = $view['slots']->get('message', 'mautic.core.error.generic');
                 <h1><i class="fa fa-quote-left"></i> <?php echo $view['translator']->trans($message, ['%code%' => $status_code]); ?> <i class="fa fa-quote-right"></i></h1>
                 <h4 class="mt-5"><strong><?php echo $status_code; ?></strong> <?php echo $status_text; ?></h4>
 
-                <footer class="text-right">Mautibot</footer>
+                <footer class="text-right"><?php echo $configParameterBag->get('custom_exception_page_signature'); ?></footer>
             </blockquote>
             <div class="pull-right">
                 <a class="text-muted" href="mailto:<?php echo $mailSupport; ?>"><?php echo $view['translator']->trans('mautic.core.report_issue'); ?></a>

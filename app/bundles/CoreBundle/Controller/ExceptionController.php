@@ -12,6 +12,7 @@
 namespace Mautic\CoreBundle\Controller;
 
 use Mautic\ApiBundle\Helper\RequestHelper;
+use Mautic\UserBundle\Entity\User;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -156,7 +157,7 @@ class ExceptionController extends CommonController
     protected function extractCode($exception)
     {
         $code = $exception->getStatusCode();
-        if ($code === 0) {
+        if (0 === $code) {
             //thrown exception that didn't set a code
             $code = 500;
         }
@@ -169,35 +170,35 @@ class ExceptionController extends CommonController
      */
     protected function buildSubjectMail($code)
     {
-        $subject = 'Demande de support - Code : '.$code;
+        $subject = sprintf(
+            '%s: %s',
+            $this->coreParametersHelper->get('custom_exception_email_subject'),
+            $code
+        );
 
         return $subject;
     }
 
+    /**
+     * @param User   $user
+     * @param string $url
+     * @param string $exception
+     *
+     * @return string
+     */
     protected function buildBodyMailFromException($user, $url, $exception)
     {
         $code         = $this->extractCode($exception);
         $errorMessage = $exception->getMessage();
-        $stack        = $exception->getTrace();
 
-        return $this->buildBodyMail($code, $errorMessage, $url, $stack, $user);
-    }
-
-    /**
-     * construct body mail.
-     */
-    protected function buildBodyMail($code, $errorMessage, $url, $stack, $user)
-    {
-        $pile = $this->renderView('MauticCoreBundle:Exception:traces.html.php', ['traces' => $stack]);
-        $body = 'Votre identité : '.$user->getName().', '.$user->getEmail().' %0D%0A %0D%0A';
-        $body .= 'Ce que vous vouliez faire : '.'%0D%0A %0D%0A';
-        $body .= 'Les actions que vous avez faites : '.'%0D%0A %0D%0A';
-        $body .= 'Ce qui s\'est passé : '.'%0D%0A %0D%0A';
-        $body .= 'Informations complèmentaires : '.'%0D%0A %0D%0A';
-        $body .= '*** NE PAS EFFACER CI DESSOUS - INFORMATIONS POUR LE SUPPORT ***'.'%0D%0A';
-        $body .= 'URL d\'erreur : '."$url %0D%0A";
-        $body .= 'Type d\'erreur : '."$code $errorMessage %0D%0A ";
-
-        return $body;
+        return $this->renderView(
+            'MauticCoreBundle:Error:email-body.html.php',
+            [
+                'message'      => $errorMessage,
+                'code'         => $code,
+                'url'          => $url,
+                'user'         => $user,
+            ]
+        );
     }
 }
