@@ -1171,23 +1171,5 @@ return [
         'stats_update_url'                 => 'https://updates.mautic.org/stats/send', // set to empty in config file to disable
         'install_source'                   => 'Mautic',
         'system_update_url'                => 'https://api.github.com/repos/mautic/mautic/releases',
-        'custom_sidebar_style'             => 'background-color: #E40050',
-        'custom_sidebar_link_style'        => 'background-color: #E40050',
-        'custom_logo_src'                  => 'media/images/automation_picto_mautic.png',
-        'custom_logo_style'                => 'float: left',
-        'custom_logo_text_src'             => 'media/images/automation_logo_mautic.png',
-        'custom_logo_text_style'           => 'float: left',
-        'custom_menu_style'                => '',
-        'custom_login_logo_src'            => 'media/images/automation_logo_lb200.png',
-        'custom_login_logo_wrapper_style'  => 'width:200px',
-        'mail_error_support_manual_report' => 'support@webmecanik.com',
-        'mail_error_support_mail_auto'     => 'support+bot@webmecanik.com',
-        'mail_error_support_ignored_url'   => [
-            '0' => 'apple-touch-icon',
-            '1' => 'dnt-policy',
-            '2' => 'browserconfig',
-            '3' => 'apple-app-site-association',
-        ],
-        'custom_copyright_footer' => '<a href="http://www.webmecanik.com">Webmecanik</a>',
     ],
 ];
