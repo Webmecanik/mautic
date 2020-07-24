@@ -16,6 +16,7 @@ include_once 'security.php';
 unset($firewalls['login']);
 unset($firewalls['main']['simple_form']);
 unset($firewalls['main']['remember_me']);
+$firewalls['main']['remember_me'] = false;
 
 $firewalls['main']['entry_point'] = 'mautic.security.authenticator.keycloak';
 
