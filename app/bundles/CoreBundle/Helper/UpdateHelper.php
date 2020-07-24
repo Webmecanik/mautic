@@ -26,39 +26,18 @@ use Monolog\Logger;
  */
 class UpdateHelper
 {
-    /**
-     * @var PathsHelper
-     */
     private $pathsHelper;
 
-    /**
-     * @var Logger
-     */
     private $logger;
 
-    /**
-     * @var CoreParametersHelper
-     */
     private $coreParametersHelper;
 
-    /**
-     * @var Client
-     */
     private $client;
 
-    /**
-     * @var ReleaseParser
-     */
     private $releaseParser;
 
-    /**
-     * @var string
-     */
     private $phpVersion;
 
-    /**
-     * @var string
-     */
     private $mauticVersion;
 
     public function __construct(
@@ -129,7 +108,6 @@ class UpdateHelper
         $updateStability = $this->coreParametersHelper->get('update_stability');
 
         try {
-            // @todo
             if (!$overrideCache && is_readable($cacheFile)) {
                 return $this->checkCachedUpdateData($cacheFile, $updateStability);
             }
@@ -142,7 +120,6 @@ class UpdateHelper
 
         // Fetch the latest version
         try {
-            // @todo
             $release = $this->fetchLatestCompatibleVersion($updateStability);
         } catch (LatestVersionSupportedException $exception) {
             return [

@@ -48,17 +48,17 @@ class UserController extends FormController
         $this->get('session')->set('mautic.user.filter', $search);
 
         //do some default filtering
-        $filter              = ['string' => $search, 'force' => ''];
-
-        $tmpl           = $this->request->isXmlHttpRequest() ? $this->request->get('tmpl', 'index') : 'index';
-        $users          = $this->getModel('user.user')->getEntities(
+        $filter = ['string' => $search, 'force' => ''];
+        $tmpl   = $this->request->isXmlHttpRequest() ? $this->request->get('tmpl', 'index') : 'index';
+        $users  = $this->getModel('user.user')->getEntities(
             [
                 'start'      => $start,
                 'limit'      => $limit,
                 'filter'     => $filter,
                 'orderBy'    => $orderBy,
                 'orderByDir' => $orderByDir,
-            ]);
+            ]
+        );
 
         //remove webmecanik'user for non wmk's users
         $users = true === $this->isWebmecanikUser($this->user) ? $users : $this->getAllNonWmkUsers($users);
@@ -357,9 +357,9 @@ class UserController extends FormController
      */
     public function deleteAction($objectId)
     {
-//        if (!$this->get('mautic.security')->isGranted('user:users:delete')) {
-        return $this->accessDenied();
-//        }
+        if (!$this->get('mautic.security')->isGranted('user:users:delete')) {
+            return $this->accessDenied();
+        }
 
         $currentUser    = $this->user;
         $page           = $this->get('session')->get('mautic.user.page', 1);
