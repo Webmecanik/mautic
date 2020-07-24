@@ -2,6 +2,8 @@
 
 $configParameterBag = (new \Mautic\CoreBundle\Loader\ParameterLoader())->getParameterBag();
 
+Swift_Preferences::getInstance()->setCacheType('array');
+
 //Knpu oauth2 configuration
 $isTestportal     = false !== strpos((string) $configParameterBag->get('portal_url'), 'testportail.webmecanik.com');
 $kc_client_id     = $configParameterBag->get('kc_client_id');

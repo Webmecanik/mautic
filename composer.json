@@ -111,7 +111,8 @@
         "kamermans/guzzle-oauth2-subscriber": "^1.0",
         "barryvdh/elfinder-flysystem-driver": "^0.2.1",
         "stevenmaguire/oauth2-keycloak": "^2.1",
-        "knpuniversity/oauth2-client-bundle": "1.28"
+        "knpuniversity/oauth2-client-bundle": "^1.28",
+        "cweagans/composer-patches": "^1.6"
     },
     "require-dev": {
         "symfony/web-profiler-bundle": "~3.4.0",
@@ -176,6 +177,11 @@
         "symfony-assets-install": "relative",
         "incenteev-parameters": {
             "file": "app/config/parameters.yml"
+        },
+        "patches": {
+            "swiftmailer/swiftmailer": {
+                "remote patch": "https://patch-diff.githubusercontent.com/raw/Webmecanik/swiftmailer/pull/1.diff"
+            }
         }
     }
 }
