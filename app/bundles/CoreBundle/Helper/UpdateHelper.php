@@ -26,18 +26,39 @@ use Monolog\Logger;
  */
 class UpdateHelper
 {
+    /**
+     * @var PathsHelper
+     */
     private $pathsHelper;
 
+    /**
+     * @var Logger
+     */
     private $logger;
 
+    /**
+     * @var CoreParametersHelper
+     */
     private $coreParametersHelper;
 
+    /**
+     * @var Client
+     */
     private $client;
 
+    /**
+     * @var ReleaseParser
+     */
     private $releaseParser;
 
+    /**
+     * @var string
+     */
     private $phpVersion;
 
+    /**
+     * @var string
+     */
     private $mauticVersion;
 
     public function __construct(
