@@ -13,11 +13,19 @@
 include_once 'security.php';
 
 // login/logout SSO changes
-unset($firewalls['login']);
-unset($firewalls['main']['simple_form']);
-unset($firewalls['main']['remember_me']);
+if (!isset($firewalls)) {
+    $firewalls = [];
+}
+if (isset($firewalls['login'])) {
+    unset($firewalls['login']);
+}
+if (isset($firewalls['main']['simple_form'])) {
+    unset($firewalls['main']['simple_form']);
+}
+if (isset($firewalls['main']['remember_me'])) {
+    unset($firewalls['main']['remember_me']);
+}
 $firewalls['main']['remember_me'] = false;
-
 $firewalls['main']['entry_point'] = 'mautic.security.authenticator.keycloak';
 
 // If oauth2_area enabled, then rewrite settings
