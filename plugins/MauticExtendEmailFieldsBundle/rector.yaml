@@ -1,0 +1,8 @@
+parameters:
+    sets:
+        - dead-code
+        - code-quality
+        - symfony34
+
+    paths:
+        - plugins/MauticExtendEmailFieldsBundle

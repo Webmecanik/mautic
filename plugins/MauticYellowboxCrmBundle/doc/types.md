@@ -1,0 +1,11 @@
+    [0] => ALPHANUMERIQUE
+    [1] => TABLE
+    [2] => IDUTILISATEUR - owner/manager
+    [3] => DATE
+    [4] => NUMERIQUE
+    [5] => CHAMPSOC
+    [6] => BOOLEEN
+    [7] => ZONETEXTE
+    [8] => TELEPHONE
+    [9] => CHAMPCONTACT
+    [10] => ENTIER

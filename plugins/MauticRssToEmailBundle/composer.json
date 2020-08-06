@@ -1,0 +1,13 @@
+{
+    "name": "raow/mautic-rss-to-email-bundle",
+    "type": "mautic-plugin",
+    "authors": [
+        {
+            "name": "Chris Schrijver",
+            "email": "chris@raow.nl"
+        }
+    ],
+    "require": {
+        "simplepie/simplepie": "^1.5"
+    }
+}

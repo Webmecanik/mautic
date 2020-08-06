@@ -96,6 +96,16 @@
 !/plugins/MauticSocialBundle
 !/plugins/MauticZapierBundle
 !/plugins/index.html
+!/plugins/AutomationBundle
+!/plugins/InesCrmBundle
+!/plugins/MauticContactOverviewBundle
+!/plugins/MauticEcrBundle
+!/plugins/MauticExtendEmailFieldsBundle
+!/plugins/MauticOwnerManagerBundle
+!/plugins/MauticRecaptchaBundle
+!/plugins/MauticRssToEmailBundle
+!/plugins/MauticYellowboxCrmBundle
+!/plugins/MauticWebinarBundle
 
 /themes/*
 !/themes/aurora
