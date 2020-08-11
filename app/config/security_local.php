@@ -68,9 +68,15 @@ $firewalls['main']['logout'] = [
     'target'          => '%mautic.after_logout_target%',
 ];
 
-$container->loadFromExtension('security',
+$container->loadFromExtension(
+    'security',
     [
-        'firewalls' => $firewalls,
+        'providers' => [
+            'user_provider' => [
+                'id' => 'mautic.user.provider',
+            ],
+        ],
+        'firewalls'      => $firewalls,
     ]
 );
 
