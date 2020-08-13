@@ -71,7 +71,8 @@ if (!isset($lead)) {
                     echo "\n          <div class=\"mauticform-page-wrapper mauticform-page-$pageCount\" data-mautic-form-page=\"$pageCount\"$lastFieldAttribute>\n";
                 endif;
 
-                if (!$f->getParent() && $f->showForContact($submissions, $lead, $form, $displayManager)):
+                if ($f->showForContact($submissions, $lead, $form, $displayManager)):
+                    if (!$f->getParent()):
                     if ($f->isCustom()):
                         if (!isset($fieldSettings[$f->getType()])):
                             continue;
@@ -136,7 +137,7 @@ if (!isset($lead)) {
                     );
                     endif;
                 endforeach;
-
+                endif;
                 if (isset($formPages) && isset($formPages['close'][$fieldId])):
                     // Close the page
                     echo "\n            </div>\n";
