@@ -65,7 +65,7 @@
                             <?php
                             /** @var \Mautic\CoreBundle\Templating\Helper\VersionHelper $version */
                             $version = $view['version'];
-                            echo $version->getVersion(); ?>></div>
+                            echo $version->getVersion(); ?></div>
                     </div>
                 </div>
             </footer>
