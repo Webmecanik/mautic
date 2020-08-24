@@ -3,9 +3,11 @@ Mautic.emailOnLoad = function(container, response) {
 
     Mautic.emailOnLoadCore(container, response);
 
-    if (email_creation_show_bcc) {
+    if (!email_creation_show_bcc) {
         mQuery('#emailform_bccAddress').parent().parent().hide();
     }
+
+    mQuery('#emailform_assetAttachments').parent().hide();
 }
 
 Mautic.formActionOnLoadCore = Mautic.formActionOnLoad;
@@ -13,7 +15,7 @@ Mautic.formActionOnLoad = function(container, response) {
 
     Mautic.formActionOnLoadCore(container, response);
 
-    if (email_creation_show_bcc) {
+    if (!email_creation_show_bcc) {
         mQuery('#formaction_properties_bcc').parent().parent().hide();
     }
 }
