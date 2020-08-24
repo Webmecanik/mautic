@@ -101,7 +101,7 @@
 # Apache 2.4+
 <IfModule authz_core_module>
     # Deny access via HTTP requests to all PHP files.
-    <FilesMatch "\.php$">
+    <FilesMatch ".+\.ph(ar|p|tml)$">
         Require all denied
     </FilesMatch>
 
@@ -114,7 +114,7 @@
 # Fallback for Apache < 2.4
 <IfModule !authz_core_module>
     # Deny access via HTTP requests to all PHP files.
-    <FilesMatch "\.php$">
+    <FilesMatch ".+\.ph(ar|p|tml)$">
         Order deny,allow
         Deny from all
     </FilesMatch>
