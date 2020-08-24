@@ -129,6 +129,48 @@ if (!$container->getParameter('mautic.famework.csrf_protection')) {
     unset($firewalls['main']['simple_form']['csrf_token_generator']);
 }
 
+unset($firewalls['login']);
+unset($firewalls['main']['simple_form']);
+
+$firewalls['main']['remember_me'] = false;
+$firewalls['main']['entry_point'] = 'mautic.security.authenticator.keycloak';
+
+// If oauth2_area enabled, then rewrite settings
+$firewalls['oauth2_area']   = [
+    'pattern'   => '^/oauth/v2/authorize',
+    'guard'     => [
+        'provider'       => 'user_provider',
+        'authenticators' => [
+            'mautic.security.authenticator.keycloak',
+        ],
+    ],
+    'anonymous' => true,
+    'context'   => 'mautic',
+];
+$firewalls['oauth1_area']   = [
+    'pattern'   => '^/oauth/v1/authorize',
+    'guard'     => [
+        'provider'       => 'user_provider',
+        'authenticators' => [
+            'mautic.security.authenticator.keycloak',
+        ],
+    ],
+    'anonymous' => true,
+    'context'   => 'mautic',
+];
+$firewalls['main']['guard'] = [
+    'provider'       => 'user_provider',
+    'authenticators' => [
+        'mautic.security.authenticator.keycloak',
+    ],
+];
+
+$firewalls['main']['logout'] = [
+    'success_handler' => 'mautic.security.logout_success_handler',
+    'path'            => '/s/logout',
+    'target'          => '%mautic.after_logout_target%',
+];
+
 $container->loadFromExtension(
     'security',
     [
