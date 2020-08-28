@@ -28,16 +28,29 @@ class EcrSettings
     private $integration;
 
     /**
+     * @var IntegrationHelper
+     */
+    private $integrationHelper;
+
+    /**
      * EcrSettings constructor.
      */
     public function __construct(IntegrationHelper $integrationHelper)
     {
-        $this->integration = $integrationHelper->getIntegrationObject('Ecr');
-        if ($this->integration instanceof EcrIntegration && $this->integration->getIntegrationSettings()->getIsPublished()) {
-            $this->settings = array_merge(
-                $this->integration->getDecryptedApiKeys(),
-                $this->integration->mergeConfigToFeatureSettings()
-            );
+        $this->integrationHelper = $integrationHelper;
+    }
+
+    public function initialize()
+    {
+        if (null === $this->integration) {
+            $this->integration = $this->integrationHelper->getIntegrationObject('Ecr');
+            if ($this->integration instanceof EcrIntegration && $this->integration->getIntegrationSettings(
+                )->getIsPublished()) {
+                $this->settings = array_merge(
+                    $this->integration->getDecryptedApiKeys(),
+                    $this->integration->mergeConfigToFeatureSettings()
+                );
+            }
         }
     }
 
@@ -46,6 +59,8 @@ class EcrSettings
      */
     public function getMatchingFields()
     {
+        $this->initialize();
+
         return ArrayHelper::getValue('matchingFields', $this->settings, []);
     }
 
@@ -54,6 +69,8 @@ class EcrSettings
      */
     public function getUser()
     {
+        $this->initialize();
+
         return ArrayHelper::getValue('user', $this->settings);
     }
 
@@ -62,6 +79,8 @@ class EcrSettings
      */
     public function getKey()
     {
+        $this->initialize();
+
         return ArrayHelper::getValue('key', $this->settings);
     }
 
@@ -70,6 +89,8 @@ class EcrSettings
      */
     public function syncDnc()
     {
+        $this->initialize();
+
         return ArrayHelper::getValue('dnc', $this->settings, false);
     }
 }
