@@ -75,7 +75,9 @@
 !/media/images/mautic_logo*
 !/media/images/automation_*
 !/media/images/atmt_*
-!/media/images/patron*
+!/media/images/patron_*
+!/media/images/ines_*
+!/media/images/btn_*
 !/media/images/.htaccess
 /media/dashboards/*
 !/media/dashboards/*.json
