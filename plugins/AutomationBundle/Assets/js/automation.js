@@ -1,33 +1,42 @@
-Mautic.emailOnLoadCore = Mautic.emailOnLoad;
-Mautic.emailOnLoad = function(container, response) {
+Mautic.emailOnLoad = (function (emailOnLoadCore) {
+    return function (container, response) {
 
-    Mautic.emailOnLoadCore(container, response);
+        if (!email_creation_show_bcc) {
+            mQuery('#emailform_bccAddress').parent().parent().hide();
+        }
 
-    if (!email_creation_show_bcc) {
-        mQuery('#emailform_bccAddress').parent().parent().hide();
+        mQuery('#emailform_assetAttachments').parent().hide();
+
+        // Launch original Mautic.emailOnLoad function
+        emailOnLoadCore(container, response);
+
     }
+})(Mautic.emailOnLoad);
 
-    mQuery('#emailform_assetAttachments').parent().hide();
-}
+Mautic.formActionOnLoad = (function (formActionOnLoadCore) {
+    return function (container, response) {
 
-Mautic.formActionOnLoadCore = Mautic.formActionOnLoad;
-Mautic.formActionOnLoad = function(container, response) {
+        if (!email_creation_show_bcc) {
+            mQuery('#formaction_properties_bcc').parent().parent().hide();
+        }
 
-    Mautic.formActionOnLoadCore(container, response);
+        // Launch original Mautic.emailOnLoad function
+        formActionOnLoadCore(container, response);
 
-    if (!email_creation_show_bcc) {
-        mQuery('#formaction_properties_bcc').parent().parent().hide();
     }
-}
+})(Mautic.formActionOnLoad);
 
-Mautic.userOnLoadCore = Mautic.userOnLoad;
-Mautic.userOnLoad = function (container, response) {
 
-    Mautic.userOnLoadCore(container, response);
+Mautic.userOnLoad = (function (userOnLoadCore) {
+    return function (container, response) {
 
-    if (mQuery(container + ' #list-search').length < 1) {
-        mQuery('#user_firstName, #user_lastName, #user_username, #user_email').attr('readonly', 'readonly');
-        mQuery('#user_plainPassword').remove();
-        mQuery('#user_plainPassword_password, #user_plainPassword_confirm').parents('.row').remove();
+        userOnLoadCore(container, response);
+
+        if (mQuery(container + ' #list-search').length < 1) {
+            mQuery('#user_firstName, #user_lastName, #user_username, #user_email').attr('readonly', 'readonly');
+            mQuery('#user_plainPassword').remove();
+            mQuery('#user_plainPassword_password, #user_plainPassword_confirm').parents('.row').remove();
+        }
+
     }
-}
+})(Mautic.userOnLoad);
