@@ -10,7 +10,7 @@
  */
 
 // load basic Mautic security
-include_once 'security.php';
+include 'security.php';
 
 // disable upgrade notification
 $container->setParameter('mautic.security.disableUpdates', true);
