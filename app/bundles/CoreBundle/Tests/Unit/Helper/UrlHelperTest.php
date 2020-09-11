@@ -194,4 +194,12 @@ STRING
             UrlHelper::sanitizeAbsoluteUrl('http://username:password@hostname:9090/path?ar g1=value?arg2=some+email@address.com#anchor')
         );
     }
+
+    public function testUrlValid()
+    {
+        $this->assertTrue(UrlHelper::isValidUrl('https://domain.tld/e'));
+        $this->assertTrue(UrlHelper::isValidUrl('https://domain.tld/é'));
+        $this->assertFalse(UrlHelper::isValidUrl('notvalidurl'));
+        $this->assertFalse(UrlHelper::isValidUrl('notvalidurlé'));
+    }
 }
