@@ -306,6 +306,7 @@ return [
                     'translator',
                     'doctrine.orm.entity_manager',
                     'mautic.stage.model.stage',
+                    'mautic.helper.core_parameters',
                 ],
             ],
             'mautic.form.type.email.utm_tags' => [
@@ -870,5 +871,6 @@ return [
         'mailer_mailjet_sandbox'              => false,
         'mailer_mailjet_sandbox_default_mail' => null,
         'disable_trackable_urls'              => false,
+        'theme_email_default'                 => 'blank',
     ],
 ];

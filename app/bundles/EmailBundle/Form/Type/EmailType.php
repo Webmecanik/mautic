@@ -23,6 +23,7 @@ use Mautic\CoreBundle\Form\Type\FormButtonsType;
 use Mautic\CoreBundle\Form\Type\SortableListType;
 use Mautic\CoreBundle\Form\Type\ThemeListType;
 use Mautic\CoreBundle\Form\Type\YesNoButtonGroupType;
+use Mautic\CoreBundle\Helper\CoreParametersHelper;
 use Mautic\EmailBundle\Entity\Email;
 use Mautic\FormBundle\Form\Type\FormListType;
 use Mautic\LeadBundle\Form\Type\LeadListType;
@@ -62,14 +63,21 @@ class EmailType extends AbstractType
      */
     private $stageModel;
 
+    /**
+     * @var CoreParametersHelper
+     */
+    private $coreParametersHelper;
+
     public function __construct(
         TranslatorInterface $translator,
         EntityManager $entityManager,
-        StageModel $stageModel
+        StageModel $stageModel,
+        CoreParametersHelper $coreParametersHelper
     ) {
-        $this->translator = $translator;
-        $this->em         = $entityManager;
-        $this->stageModel = $stageModel;
+        $this->translator           = $translator;
+        $this->em                   = $entityManager;
+        $this->stageModel           = $stageModel;
+        $this->coreParametersHelper = $coreParametersHelper;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -198,7 +206,7 @@ class EmailType extends AbstractType
                     'class'   => 'form-control not-chosen hidden',
                     'tooltip' => 'mautic.email.form.template.help',
                 ],
-                'data' => $options['data']->getTemplate() ? $options['data']->getTemplate() : 'blank',
+                'data' => $options['data']->getTemplate() ? $options['data']->getTemplate() : $this->coreParametersHelper->get('theme_email_default'),
             ]
         );
 
