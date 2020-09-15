@@ -142,7 +142,9 @@ class Tweet extends FormEntity
         $builder->addCategory();
         $builder->addNullableField('mediaId', Type::STRING, 'media_id');
         $builder->addNullableField('mediaPath', Type::STRING, 'media_path');
-        $builder->addField('text', Type::STRING, ['length' => 280]);
+        $builder->createField('text', 'string')
+            ->length(280)
+            ->build();
         $builder->addNullableField('sentCount', Type::INTEGER, 'sent_count');
         $builder->addNullableField('favoriteCount', Type::INTEGER, 'favorite_count');
         $builder->addNullableField('retweetCount', Type::INTEGER, 'retweet_count');
