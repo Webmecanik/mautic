@@ -1,5 +1,5 @@
 {
-  "version": "3.0.11-atmt",
+  "version": "3.0.12-atmt",
   "stability": "stable",
   "minimum_php_version": "7.2.21",
   "maximum_php_version": "7.3.99",
