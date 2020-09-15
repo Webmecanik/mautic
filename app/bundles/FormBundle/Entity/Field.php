@@ -244,7 +244,11 @@ class Field
 
         $builder->addNullableField('labelAttributes', 'string', 'label_attr');
 
-        $builder->addNullableField('inputAttributes', 'string', 'input_attr');
+        $builder->createField('inputAttributes', 'string')
+            ->columnName('input_attr')
+            ->nullable()
+            ->length(300)
+            ->build();
 
         $builder->addNullableField('containerAttributes', 'string', 'container_attr');
 
@@ -879,10 +883,9 @@ class Field
     /**
      * Decide if the field should be displayed based on thr progressive profiling conditions.
      *
-     * @param array|null          $submissions
-     * @param Lead                $lead
-     * @param Form                $form
-     * @param DisplayManager|null $displayManager
+     * @param array|null $submissions
+     * @param Lead       $lead
+     * @param Form       $form
      *
      * @return bool
      */

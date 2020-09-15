@@ -90,7 +90,11 @@ class CitrixEvent
         $builder->addNamedField('product', 'string', 'product');
         $builder->addNamedField('email', 'string', 'email');
         $builder->addNamedField('eventName', 'string', 'event_name');
-        $builder->addNamedField('eventDesc', 'string', 'event_desc', true);
+        $builder->createField('eventDesc', 'string')
+            ->columnName('event_desc')
+            ->nullable()
+            ->length(300)
+            ->build();
         $builder->createField('eventType', 'string')
             ->columnName('event_type')
             ->length(50)
