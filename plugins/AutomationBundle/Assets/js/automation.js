@@ -36,6 +36,8 @@ Mautic.userOnLoad = (function (userOnLoadCore) {
             mQuery('#user_firstName, #user_lastName, #user_username, #user_email').attr('readonly', 'readonly');
             mQuery('#user_plainPassword').remove();
             mQuery('#user_plainPassword_password, #user_plainPassword_confirm').parents('.row').remove();
+        } else {
+            mQuery('.fa-plus').parents('.btn').hide();
         }
 
     }
