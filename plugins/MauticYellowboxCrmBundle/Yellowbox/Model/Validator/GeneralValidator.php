@@ -60,8 +60,10 @@ class GeneralValidator
     public function validateObject(BaseModel $object, array $description): void
     {
         foreach ($object->dehydrate() as $fieldName => $fieldValue) {
-            $fieldDescription = $description[$fieldName];
-            $this->validateField($fieldDescription, $fieldValue);
+            if (isset($description[$fieldName])) {
+                $fieldDescription = $description[$fieldName];
+                $this->validateField($fieldDescription, $fieldValue);
+            }
         }
     }
 
