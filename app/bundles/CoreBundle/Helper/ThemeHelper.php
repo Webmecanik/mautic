@@ -467,9 +467,10 @@ class ThemeHelper
         if (!empty($config['features'])) {
             foreach ($config['features'] as $feature) {
                 $featureFile     = sprintf('html/%s.html.twig', strtolower($feature));
+                $featureFileMjml = str_replace('html.twig', 'mjml.twig', $featureFile);
                 $requiredFiles[] = $featureFile;
 
-                if (in_array($featureFile, $allowedFiles)) {
+                if (in_array($featureFile, $allowedFiles) || in_array($featureFileMjml, $allowedFiles)) {
                     $foundRequiredFiles[] = $featureFile;
                 }
             }
