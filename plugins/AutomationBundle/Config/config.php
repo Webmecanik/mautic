@@ -41,6 +41,10 @@ return [
                     'mautic.helper.core_parameters',
                 ],
             ],
+            'automation.subscriber.doctrine'      => [
+                'class'     => \MauticPlugin\AutomationBundle\EventListener\DoctrineSubscriber::class,
+                'tag'       => 'doctrine.event_subscriber',
+            ],
         ],
         'forms'   => [
         ],
