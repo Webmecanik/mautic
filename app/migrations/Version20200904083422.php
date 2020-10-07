@@ -27,7 +27,6 @@ final class Version20200904083422 extends AbstractMauticMigration
         $configParameterBag          = (new \Mautic\CoreBundle\Loader\ParameterLoader())->getParameterBag();
         if (false !== strpos($configParameterBag->get('portal_url'), 'patronpoint')) {
             throw new SkipMigration('Migrations skipped for PP');
-
             return;
         }
 
@@ -43,10 +42,10 @@ final class Version20200904083422 extends AbstractMauticMigration
                 $userLocale = !empty($user['locale']) ? $user['locale'] : $configLocale;
 
                 if ('fr' == $userLocale) {
-                    $header  = 'Votre compte Webmecanik Automation vient être mis à jour en 3.0.11';
+                    $header  = "Votre compte Webmecanik Automation d\'vient être mis à jour en 3.0";
                     $message = 'Consultez <a href="https://www.webmecanik.com/changelog/" target="_blank"><u>la note de mise à jour ici</u></a>.';
                 } else {
-                    $header  = 'Your instance has been updated to Webmecanik Automation 3.0.11';
+                    $header  = 'Your instance has been updated to Webmecanik Automation 3.0';
                     $message = 'Check <a href="https://en.webmecanik.com/changelog/" target="_blank"><u>the release note here</u></a>.';
                 }
 
