@@ -23,7 +23,7 @@ class Version20201002103053 extends AbstractMauticMigration
      * @throws SkipMigrationException
      * @throws \Doctrine\DBAL\Schema\SchemaException
      */
-    public function preUp(Schema $schema)
+    public function preUp(Schema $schema): void
     {
         $leadsTable = $schema->getTable($this->prefix.'leads');
 
@@ -36,7 +36,7 @@ class Version20201002103053 extends AbstractMauticMigration
         }
     }
 
-    public function up(Schema $schema)
+    public function up(Schema $schema): void
     {
         // Please modify to your needs
     }
