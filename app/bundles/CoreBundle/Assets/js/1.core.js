@@ -618,7 +618,7 @@ var Mautic = {
                 if (response.route && response.route.indexOf("ajax") == -1) {
                     //update URL in address bar
                     MauticVars.manualStateChange = false;
-                    History.pushState(null, "Mautic", response.route);
+                    History.pushState(null, mQuery('title').text(), response.route);
                 }
             } else if (response.newContent && mQuery('.modal.in').length) {
                 //assume a modal was the recipient of the information
@@ -674,8 +674,9 @@ var Mautic = {
     },
 
     /**
-     * Call at the end of the moderated interval callback function to let setModeratedInterval know
-     * the action is done and it's safe to execute again
+     * Call at the end of the moderated interval callback function to let
+     * setModeratedInterval know the action is done and it's safe to execute
+     * again
      *
      * @param key
      */
