@@ -75,7 +75,7 @@ class FormSubscriber implements EventSubscriberInterface
             'label'           => 'mautic.email.form.action.sendemail.lead',
             'description'     => 'mautic.email.form.action.sendemail.lead.descr',
             'formType'        => EmailSendType::class,
-            'formTypeOptions' => ['update_select' => 'formaction_properties_email'],
+            'formTypeOptions' => ['update_select' => 'formaction_properties_email', 'with_immediately' => true],
             'formTheme'       => 'MauticEmailBundle:FormTheme\EmailSendList',
             'eventName'       => FormEvents::ON_EXECUTE_SUBMIT_ACTION,
         ]);

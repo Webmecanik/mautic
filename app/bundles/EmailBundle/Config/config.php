@@ -327,7 +327,10 @@ return [
             ],
             'mautic.form.type.emailsend_list' => [
                 'class'     => \Mautic\EmailBundle\Form\Type\EmailSendType::class,
-                'arguments' => ['router'],
+                'arguments' => [
+                    'router',
+                    'mautic.helper.core_parameters',
+                ],
             ],
             'mautic.form.type.formsubmit_sendemail_admin' => [
                 'class' => \Mautic\EmailBundle\Form\Type\FormSubmitActionUserEmailType::class,

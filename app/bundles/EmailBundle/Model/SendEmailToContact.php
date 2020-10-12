@@ -97,6 +97,11 @@ class SendEmailToContact
     private $contact = [];
 
     /**
+     * @var MailHelper
+     */
+    private $temporaryMailer;
+
+    /**
      * SendEmailToContact constructor.
      */
     public function __construct(MailHelper $mailer, StatHelper $statHelper, DoNotContact $dncModel, TranslatorInterface $translator)
@@ -260,7 +265,23 @@ class SendEmailToContact
 
         $this->dncModel->clearEntities();
 
+        if (null !== $this->temporaryMailer) {
+            $this->mailer          = clone $this->temporaryMailer;
+            $this->temporaryMailer = null;
+        }
+
         $this->mailer->reset();
+    }
+
+    /**
+     * Set Sample Mailer for immediately sending.
+     */
+    public function setSampleMailer()
+    {
+        if (null === $this->temporaryMailer) {
+            $this->temporaryMailer = clone $this->mailer;
+        }
+        $this->mailer = $this->mailer->getSampleMailer();
     }
 
     /**

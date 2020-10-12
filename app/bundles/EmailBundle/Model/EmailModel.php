@@ -1298,20 +1298,21 @@ class EmailModel extends FormModel implements AjaxLookupModelInterface
      */
     public function sendEmail(Email $email, $leads, $options = [])
     {
-        $listId              = ArrayHelper::getValue('listId', $options);
-        $ignoreDNC           = ArrayHelper::getValue('ignoreDNC', $options, false);
-        $tokens              = ArrayHelper::getValue('tokens', $options, []);
-        $assetAttachments    = ArrayHelper::getValue('assetAttachments', $options, []);
-        $customHeaders       = ArrayHelper::getValue('customHeaders', $options, []);
-        $emailType           = ArrayHelper::getValue('email_type', $options, '');
-        $isMarketing         = (in_array($emailType, ['marketing']) || !empty($listId));
-        $emailAttempts       = ArrayHelper::getValue('email_attempts', $options, 3);
-        $emailPriority       = ArrayHelper::getValue('email_priority', $options, MessageQueue::PRIORITY_NORMAL);
-        $messageQueue        = ArrayHelper::getValue('resend_message_queue', $options);
-        $returnErrorMessages = ArrayHelper::getValue('return_errors', $options, false);
-        $channel             = ArrayHelper::getValue('channel', $options);
-        $dncAsError          = ArrayHelper::getValue('dnc_as_error', $options, false);
-        $errors              = [];
+        $listId               = ArrayHelper::getValue('listId', $options);
+        $ignoreDNC            = ArrayHelper::getValue('ignoreDNC', $options, false);
+        $tokens               = ArrayHelper::getValue('tokens', $options, []);
+        $assetAttachments     = ArrayHelper::getValue('assetAttachments', $options, []);
+        $customHeaders        = ArrayHelper::getValue('customHeaders', $options, []);
+        $emailType            = ArrayHelper::getValue('email_type', $options, '');
+        $isMarketing          = (in_array($emailType, ['marketing']) || !empty($listId));
+        $emailAttempts        = ArrayHelper::getValue('email_attempts', $options, 3);
+        $emailPriority        = ArrayHelper::getValue('email_priority', $options, MessageQueue::PRIORITY_NORMAL);
+        $messageQueue         = ArrayHelper::getValue('resend_message_queue', $options);
+        $returnErrorMessages  = ArrayHelper::getValue('return_errors', $options, false);
+        $channel              = ArrayHelper::getValue('channel', $options);
+        $dncAsError           = ArrayHelper::getValue('dnc_as_error', $options, false);
+        $immediately          = ArrayHelper::getValue('immediately', $options, false);
+        $errors               = [];
 
         if (empty($channel)) {
             $channel = (isset($options['source'])) ? $options['source'] : [];
@@ -1319,6 +1320,10 @@ class EmailModel extends FormModel implements AjaxLookupModelInterface
 
         if (!$email->getId()) {
             return false;
+        }
+
+        if ($immediately) {
+            $this->sendModel->setSampleMailer();
         }
 
         // Ensure $sendTo is indexed by lead ID

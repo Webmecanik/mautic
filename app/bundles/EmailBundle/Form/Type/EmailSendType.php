@@ -13,9 +13,12 @@ namespace Mautic\EmailBundle\Form\Type;
 
 use Mautic\ChannelBundle\Entity\MessageQueue;
 use Mautic\CoreBundle\Form\Type\ButtonGroupType;
+use Mautic\CoreBundle\Form\Type\YesNoButtonGroupType;
+use Mautic\CoreBundle\Helper\CoreParametersHelper;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -25,13 +28,19 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 class EmailSendType extends AbstractType
 {
     /**
+     * @var CoreParametersHelper
+     */
+    protected $coreParametersHelper;
+
+    /**
      * @var RouterInterface
      */
     private $router;
 
-    public function __construct(RouterInterface $router)
+    public function __construct(RouterInterface $router, CoreParametersHelper $coreParametersHelper)
     {
-        $this->router = $router;
+        $this->coreParametersHelper = $coreParametersHelper;
+        $this->router               = $router;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -183,6 +192,30 @@ class EmailSendType extends AbstractType
                 );
             }
         }
+        if (!empty($options['with_immediately'])) {
+            if ('file' === $this->coreParametersHelper->getParameter('mailer_spool_type')) {
+                $default = (isset($options['data']['immediately'])) ? $options['data']['immediately'] : false;
+                $builder->add(
+                'immediately',
+                YesNoButtonGroupType::class,
+                [
+                    'label' => 'mautic.form.action.sendemail.immediately',
+                    'data'  => $default,
+                    'attr'  => [
+                        'tooltip'=> 'mautic.form.action.sendemail.immediately.desc',
+                    ],
+                ]
+            );
+            } else {
+                $builder->add(
+                'immediately',
+                HiddenType::class,
+                [
+                    'data'  => false,
+                ]
+            );
+            }
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -190,10 +223,11 @@ class EmailSendType extends AbstractType
         $resolver->setDefaults(
             [
                 'with_email_types' => false,
+                'with_immediately' => false,
             ]
         );
 
-        $resolver->setDefined(['update_select', 'with_email_types']);
+        $resolver->setDefined(['update_select', 'with_email_types', 'with_immediately']);
     }
 
     /**
