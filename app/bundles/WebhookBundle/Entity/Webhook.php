@@ -138,7 +138,11 @@ class Webhook extends FormEntity
             ->cascadeDetach()
             ->build();
 
-        $builder->addNamedField('webhookUrl', Types::STRING, 'webhook_url');
+        $builder->createField('webhookUrl', Types::STRING)
+            ->columnName('webhook_url')
+            ->length(300)
+            ->build();
+
         $builder->addField('secret', Types::STRING);
         $builder->addNullableField('eventsOrderbyDir', Types::STRING, 'events_orderby_dir');
     }
