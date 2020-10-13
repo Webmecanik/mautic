@@ -12,6 +12,7 @@
 namespace Mautic\EmailBundle\EventListener;
 
 use Doctrine\ORM\ORMException;
+use Mautic\CoreBundle\Helper\ArrayHelper;
 use Mautic\EmailBundle\Form\Type\EmailSendType;
 use Mautic\EmailBundle\Form\Type\FormSubmitActionUserEmailType;
 use Mautic\EmailBundle\Model\EmailModel;
@@ -104,9 +105,10 @@ class FormSubscriber implements EventSubscriberInterface
             $this->emailModel->sendEmailToUser($email, $properties['user_id'], $currentLead, $event->getTokens());
         } elseif (isset($currentLead['email'])) {
             $this->emailModel->sendEmail($email, $currentLead, [
-                'source'    => ['form', $event->getAction()->getForm()->getId()],
-                'tokens'    => $event->getTokens(),
-                'ignoreDNC' => true,
+                'source'      => ['form', $event->getAction()->getForm()->getId()],
+                'tokens'      => $event->getTokens(),
+                'ignoreDNC'   => true,
+                'immediately' => ArrayHelper::getValue('immediately', $properties, false),
             ]);
         }
     }
