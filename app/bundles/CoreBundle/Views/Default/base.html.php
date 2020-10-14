@@ -52,14 +52,6 @@
                             }
                             $copyright = str_replace('Mautic', 'Mautic / '.$custom_copyright_footer, $copyright);
                         ?>
-						<script>
-                            (function(w,d,t,u,n,a,m){w['MauticTrackingObject']=n;
-                                w[n]=w[n]||function(){(w[n].q=w[n].q||[]).push(arguments)},a=d.createElement(t),
-                                m=d.getElementsByTagName(t)[0];a.async=1;a.src=u;m.parentNode.insertBefore(a,m)
-                            })(window,document,'script','https://webmecanik.automation.webmecanik.com/mtc.js','mt');
-
-                            mt('send', 'pageview');
-                        </script>
                         <div class="col-xs-6 text-muted"><?php echo $copyright; ?></div>
                         <div class="col-xs-6 text-muted text-right small">v
                             <?php
