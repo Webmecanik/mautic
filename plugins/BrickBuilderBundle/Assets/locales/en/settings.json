@@ -1,0 +1,16 @@
+{
+  "Settings mj-raw": "Settings Code",
+  "Settings mj-image": "Settings Image",
+  "Settings mj-text": "Settings Text",
+  "Settings mj-spacer": "Settings Spacer",
+  "Settings mj-divider": "Settings Divider",
+  "Settings mj-button": "Settings Button",
+  "Settings mj-social": "Settings Social",
+  "mj-text": "text",
+  "mj-image": "image",
+  "mj-button": "button",
+  "mj-divider": "divider",
+  "mj-social": "social",
+  "mj-spacer": "spacer",
+  "mj-raw": "code"
+}

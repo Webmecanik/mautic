@@ -100,6 +100,7 @@
 !/plugins/MauticZapierBundle
 !/plugins/index.html
 !/plugins/AutomationBundle
+!/plugins/BrickBuilderBundle
 !/plugins/InesCrmBundle
 !/plugins/MauticContactOverviewBundle
 !/plugins/MauticEcrBundle
