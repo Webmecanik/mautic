@@ -109,9 +109,16 @@ class InjectCustomContentSubscriber implements EventSubscriberInterface
             }
 
             $brickBuilder = $this->brickBuilderModel->getRepository()->findOneBy(['email' => $parameters['email']]);
-            if ($brickBuilder instanceof BrickBuilder && 'POST' !== $this->requestStack->getCurrentRequest()->getMethod(
-                ) && !$this->requestStack->getCurrentRequest()->request->has('brickbuilder')) {
-                $passParams['customMjml'] = $brickBuilder->getCustomMjml();
+            if ('POST' !== $this->requestStack->getCurrentRequest()->getMethod()) {
+                if (!$brickBuilder instanceof BrickBuilder) {
+                    if ($parameters['email']->getClonedId()) {
+                        $brickBuilder = $this->brickBuilderModel->getBrickBuilderFromEmailId($parameters['email']->getClonedId());
+                    }
+                }
+
+                if ($brickBuilder instanceof BrickBuilder) {
+                    $passParams['customMjml'] = $brickBuilder->getCustomMjml();
+                }
             }
 
             $passParams['customAutoSave'] = '';

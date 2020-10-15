@@ -79,4 +79,11 @@ class BrickBuilderModel extends AbstractCommonModel
         $email->setCustomHtml($customHtml);
         $this->emailModel->getRepository()->saveEntity($email);
     }
+
+    public function getBrickBuilderFromEmailId($emailId)
+    {
+        if ($email = $this->emailModel->getEntity($emailId)) {
+            return $this->getRepository()->findOneBy(['email' => $email]);
+        }
+    }
 }
