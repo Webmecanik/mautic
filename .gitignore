@@ -112,7 +112,9 @@
 
 /themes/*
 !/themes/aurora
+!/themes/basiclayout
 !/themes/blank
+!/themes/blank-as-email
 !/themes/cards
 !/themes/coffee
 !/themes/fresh-center
@@ -124,6 +126,7 @@
 !/themes/nature
 !/themes/neopolitan
 !/themes/oxygen
+!/themes/resource-download
 !/themes/skyline
 !/themes/sparse
 !/themes/sunday
