@@ -63,6 +63,10 @@ class ContactPseudoFieldsSubscriber implements EventSubscriberInterface
 
     public function processPseudoFields(InternalContactProcessPseudFieldsEvent $processPseudFieldsEvent)
     {
+        if (DivaltoIntegration::NAME !== $processPseudFieldsEvent->getIntegration()) {
+            return;
+        }
+
         $fields = $processPseudFieldsEvent->getFields();
         foreach ($fields as $name=>$field) {
             if ('company_id' === $name) {
