@@ -13,6 +13,7 @@ namespace MauticPlugin\AutomationBundle\EventListener;
 
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use Mautic\CoreBundle\Helper\CoreParametersHelper;
+use Mautic\CoreBundle\Helper\UserHelper;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -37,9 +38,12 @@ class DenyRouteSubscriber implements EventSubscriberInterface
      */
     private $translator;
 
-    public function __construct(TranslatorInterface $translator)
+    private $userHelper;
+
+    public function __construct(TranslatorInterface $translator, UserHelper $userHelper)
     {
         $this->translator = $translator;
+        $this->userHelper = $userHelper;
     }
 
     public static function getSubscribedEvents()
@@ -65,6 +69,13 @@ class DenyRouteSubscriber implements EventSubscriberInterface
                 case 'mautic_user_passwordreset':
                 case 'mautic_user_passwordresetconfirm':
                     throw new AccessDeniedHttpException($this->translator->trans('mautic.core.url.error.401', ['%url%' => $request->getRequestUri()]));
+                    break;
+
+                case 'mautic_sysinfo_index':
+                    $user = $this->userHelper->getUser();
+                    if (false !== strpos($user->getEmail(), '@webmecanik')) {
+                        throw new AccessDeniedHttpException($this->translator->trans('mautic.core.url.error.401', ['%url%' => $request->getRequestUri()]));
+                    }
                     break;
             }
         }

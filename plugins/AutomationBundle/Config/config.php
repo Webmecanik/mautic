@@ -32,6 +32,7 @@ return [
                 'class'     => \MauticPlugin\AutomationBundle\EventListener\DenyRouteSubscriber::class,
                 'arguments' => [
                     'translator',
+                    'mautic.helper.user',
                 ],
             ],
             'automation.subscriber.asset'      => [
