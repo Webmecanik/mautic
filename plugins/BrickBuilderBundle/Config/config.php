@@ -5,7 +5,7 @@ declare(strict_types=1);
 return [
     'name'        => 'Brick Builder',
     'description' => 'Exclusive builder for Automation',
-    'version'     => '1.0.0',
+    'version'     => '1.11.0',
     'author'      => 'Webmecanik',
     'routes'      => [
         'main'   => [
