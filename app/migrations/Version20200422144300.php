@@ -79,6 +79,11 @@ SQL;
     {
         foreach ($this->rowsToMigrateLookup as $rowToMigrate) {
             $properties         = unserialize($rowToMigrate['properties']);
+
+            if (!is_string($properties['list'])) {
+                continue;
+            }
+
             $properties['list'] = explode('|', $properties['list']);
 
             $params = [
@@ -112,6 +117,11 @@ SQL;
     {
         foreach ($this->rowsToMigrateSelectMultiselect as $rowToMigrate) {
             $properties   = unserialize($rowToMigrate['properties']);
+
+            if (!is_string($properties['list'])) {
+                continue;
+            }
+
             $propertyList = explode('|', $properties['list']);
 
             $convertedPropertyList = [];
